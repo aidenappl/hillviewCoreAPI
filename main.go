@@ -1,0 +1,51 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/hillview.tv/coreAPI/env"
+	"github.com/hillview.tv/coreAPI/middleware"
+	"github.com/hillview.tv/coreAPI/routers"
+)
+
+func main() {
+	primary := mux.NewRouter()
+
+	// Healthcheck Endpoint
+
+	primary.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}).Methods(http.MethodGet)
+
+	// Define the API Endpoints
+
+	r := primary.PathPrefix("/core/v1.1").Subrouter()
+
+	// Core Admin
+
+	admin := r.PathPrefix("/admin").Subrouter()
+
+	// Admin Lists
+
+	list := admin.PathPrefix("/list").Subrouter()
+
+	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
+
+	// Logging of requests
+	r.Use(middleware.LoggingMiddleware)
+
+	// Adding response headers
+	r.Use(middleware.MuxHeaderMiddleware)
+
+	// Launch API Listener
+	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Origin", "Authorization", "Accept", "X-CSRF-Token"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	log.Fatal(http.ListenAndServe(":"+env.Port, handlers.CORS(originsOk, headersOk, methodsOk)(primary)))
+}
