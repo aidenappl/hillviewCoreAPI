@@ -9,7 +9,7 @@
           "logDriver": "awslogs",
           "secretOptions": null,
           "options": {
-            "awslogs-group": "/ecs/hillviewtv-auth-service",
+            "awslogs-group": "/ecs/hillviewtv-core-service",
             "awslogs-region": "us-west-1",
             "awslogs-stream-prefix": "ecs"
           }
@@ -44,10 +44,6 @@
           {
             "valueFrom": "/env/hillviewtv-auth-service/JWT_SIGNING_KEY",
             "name": "JWT_SIGNING_KEY"
-          },
-          {
-            "valueFrom": "/env/hillviewtv-auth-service/GOOGLE_CLIENT_ID",
-            "name": "GOOGLE_CLIENT_ID"
           }
         ],
         "dockerSecurityOptions": null,
@@ -55,7 +51,7 @@
         "memoryReservation": null,
         "volumesFrom": [],
         "stopTimeout": null,
-        "image": "605737100658.dkr.ecr.us-west-1.amazonaws.com/hillviewtv-auth-service:c6d92c6",
+        "image": "605737100658.dkr.ecr.us-west-1.amazonaws.com/hillviewtv-core-service:c6d92c6",
         "startTimeout": null,
         "firelensConfiguration": null,
         "dependsOn": null,
@@ -72,7 +68,7 @@
         "dockerLabels": null,
         "systemControls": null,
         "privileged": null,
-        "name": "hillviewtv-auth-service"
+        "name": "hillviewtv-core-service"
       }
     ],
     "placementConstraints": [],
@@ -82,8 +78,8 @@
       "EXTERNAL",
       "EC2"
     ],
-    "taskDefinitionArn": "arn:aws:ecs:us-west-1:605737100658:task-definition/hillviewtv-auth-service:1",
-    "family": "hillviewtv-auth-service",
+    "taskDefinitionArn": "arn:aws:ecs:us-west-1:605737100658:task-definition/hillviewtv-core-service:1",
+    "family": "hillviewtv-core-service",
     "requiresAttributes": [
       {
         "targetId": null,
