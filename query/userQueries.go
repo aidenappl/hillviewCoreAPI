@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/hillview.tv/coreAPI/db"
@@ -234,6 +235,13 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 			return nil, fmt.Errorf("failed to scan sql rows: %w", err)
 		}
 
+		lastActive, err := GetUserLastActive(db, user.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get last active timestamp: %w", err)
+		}
+
+		user.LastActive = lastActive
+
 		user.Authentication = status
 
 		users = append(users, &user)
@@ -267,4 +275,39 @@ func InsertRequestLog(db db.Queryable, userID int, route string, method string) 
 	}
 
 	return nil
+}
+
+func GetUserLastActive(db db.Queryable, userID int) (*time.Time, error) {
+	query, args, err := sq.Select(
+		"MAX(request_logs.inserted_at) as last_active",
+	).
+		From("request_logs").
+		Where(sq.Eq{"request_logs.user_id": userID}).
+		ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to successful execute query: %w", err)
+	}
+
+	defer rows.Close()
+
+	// var timestamp time.Time
+
+	var time *time.Time
+
+	for rows.Next() {
+		err = rows.Scan(
+			&time,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan sql rows: %w", err)
+		}
+	}
+
+	return time, nil
+
 }
