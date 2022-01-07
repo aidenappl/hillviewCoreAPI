@@ -42,6 +42,10 @@
             "name": "DATABASE_DSN"
           },
           {
+            "valueFrom": "/env/hillviewtv-asset-service/DATABASE_DSN",
+            "name": "ASSET_DATABASE_DSN"
+          },
+          {
             "valueFrom": "/env/hillviewtv-auth-service/JWT_SIGNING_KEY",
             "name": "JWT_SIGNING_KEY"
           }
