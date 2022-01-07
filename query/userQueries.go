@@ -202,12 +202,12 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 		Limit(*req.Limit).
 		ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("failed to build sql query: " + err.Error())
+		return nil, fmt.Errorf("failed to build sql query: %w", err)
 	}
 
 	rows, err := db.Query(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to run sql query: " + err.Error())
+		return nil, fmt.Errorf("failed to run sql query: %w", err)
 	}
 
 	defer rows.Close()
@@ -231,7 +231,7 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 			&status.ShortName,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan sql rows: " + err.Error())
+			return nil, fmt.Errorf("failed to scan sql rows: %w", err)
 		}
 
 		user.Authentication = status
@@ -242,4 +242,29 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 
 	return users, nil
 
+}
+
+func InsertRequestLog(db db.Queryable, userID int, route string, method string) error {
+	query, args, err := sq.Insert("request_logs").
+		Columns(
+			"user_id",
+			"route",
+			"method",
+		).
+		Values(
+			userID,
+			route,
+			method,
+		).ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		return fmt.Errorf("failed to execute sql query: %w", err)
+	}
+
+	return nil
 }

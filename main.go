@@ -25,6 +25,15 @@ func main() {
 
 	r := primary.PathPrefix("/core/v1.1").Subrouter()
 
+	// Logging of requests
+	r.Use(middleware.LoggingMiddleware)
+
+	// Adding response headers
+	r.Use(middleware.MuxHeaderMiddleware)
+
+	// Track & Update Last Active
+	r.Use(middleware.TokenHandlers)
+
 	// Core Admin
 
 	admin := r.PathPrefix("/admin").Subrouter()
@@ -35,12 +44,6 @@ func main() {
 
 	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
 	list.Handle("/mobileUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
-
-	// Logging of requests
-	r.Use(middleware.LoggingMiddleware)
-
-	// Adding response headers
-	r.Use(middleware.MuxHeaderMiddleware)
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)

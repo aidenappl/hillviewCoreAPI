@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -59,6 +60,46 @@ func MuxHeaderMiddleware(next http.Handler) http.Handler {
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Server", "Go")
 		next.ServeHTTP(w, r)
+	})
+}
+
+func TokenHandlers(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get token from header
+		rawToken := r.Header.Get("Authorization")
+		splitToken := strings.Split(rawToken, "Bearer ")
+
+		next.ServeHTTP(w, r)
+
+		if len(splitToken) != 2 {
+			return
+		}
+		rawToken = splitToken[1]
+
+		if len(rawToken) < 1 {
+			return
+		}
+
+		// parse token validity
+		token, err := jwt.ParseJWT(rawToken)
+		if err != nil {
+			return
+		}
+
+		claims := token.Claims.(*jwt.HVJwtClaims)
+
+		userID, err := strconv.Atoi(claims.Subject)
+		if err != nil {
+			return
+		}
+
+		if userID != 0 && len(r.RequestURI) != 0 && len(r.Method) != 0 {
+			err = query.InsertRequestLog(db.DB, userID, r.RequestURI, r.Method)
+			if err != nil {
+				log.Println(fmt.Errorf("failed to insert request log: %w", err))
+			}
+		}
+
 	})
 }
 
