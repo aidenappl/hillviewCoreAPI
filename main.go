@@ -34,6 +34,7 @@ func main() {
 	list := admin.PathPrefix("/list").Subrouter()
 
 	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
+	list.Handle("/mobileUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
 
 	// Logging of requests
 	r.Use(middleware.LoggingMiddleware)
