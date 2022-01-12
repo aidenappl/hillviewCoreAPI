@@ -44,7 +44,7 @@ type Checkout struct {
 	User           *MobileUser `json:"user"`
 	AssociatedUser *int        `json:"associated_user,omitempty"`
 	Asset          *Asset      `json:"asset"`
-	AssetID        int         `json:"asset_id,omitempty"`
+	AssetID        *int        `json:"asset_id,omitempty"`
 	Offsite        int         `json:"offsite"`
 	CheckoutStatus *GeneralNSN `json:"checkout_status"`
 	CheckoutNotes  *string     `json:"checkout_notes"`
