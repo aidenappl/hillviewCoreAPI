@@ -45,6 +45,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 		LeftJoin("checkout_statuses ON asset_checkouts.checkout_status = checkout_statuses.id").
 		LeftJoin("assets ON asset_checkouts.asset_id = assets.id").
 		LeftJoin("users ON asset_checkouts.associated_user = users.id").
+		OrderBy("asset_checkouts.id DESC").
 		Limit(*req.Limit).
 		ToSql()
 
@@ -55,10 +56,6 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sql query: %w", err)
-	}
-
-	if !rows.Next() {
-		return nil, nil
 	}
 
 	defer rows.Close()
@@ -155,10 +152,6 @@ func ListAssets(db db.Queryable, req ListAssetsRequest) ([]*structs.Asset, error
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sql query: %w", err)
-	}
-
-	if !rows.Next() {
-		return nil, nil
 	}
 
 	defer rows.Close()
