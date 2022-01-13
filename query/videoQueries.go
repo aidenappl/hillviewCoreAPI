@@ -25,8 +25,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		"video_statuses.id",
 		"video_statuses.name",
 		"video_statuses.short_name",
-	).
-		From("videos").
+	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		OrderBy("videos.id DESC").
 		Limit(*req.Limit).
