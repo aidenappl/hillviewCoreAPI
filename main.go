@@ -38,6 +38,12 @@ func main() {
 
 	admin := r.PathPrefix("/admin").Subrouter()
 
+	// Admin Edits
+
+	edit := admin.PathPrefix("/edit").Subrouter()
+
+	edit.HandleFunc("/asset", routers.HandleEditAsset).Methods(http.MethodPost)
+
 	// Admin Lists
 
 	list := admin.PathPrefix("/list").Subrouter()
@@ -49,7 +55,6 @@ func main() {
 	list.Handle("/checkouts/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
 
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
-	
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)

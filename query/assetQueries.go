@@ -8,6 +8,76 @@ import (
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
+type EditAssetRequest struct {
+	ID            *int                `json:"id"`
+	Modifications *AssetModifications `json:"modifications"`
+}
+
+type AssetModifications struct {
+	Name        *string `json:"name"`
+	ImageURL    *string `json:"image_url"`
+	Identifier  *string `json:"identifier"`
+	Description *string `json:"description"`
+	Status      *int    `json:"status"`
+	Category    *int    `json:"category"`
+}
+
+func EditAsset(db db.Queryable, req EditAssetRequest) (*structs.Asset, error) {
+	if req.Modifications == nil {
+		return nil, fmt.Errorf("no modifications provided")
+	}
+
+	if req.ID == nil {
+		return nil, fmt.Errorf("no asset id provided")
+	}
+
+	dataToSet := map[string]interface{}{}
+
+	if req.Modifications.Name != nil {
+		dataToSet["name"] = *req.Modifications.Name
+	}
+
+	if req.Modifications.ImageURL != nil {
+		dataToSet["image_url"] = *req.Modifications.ImageURL
+	}
+
+	if req.Modifications.Identifier != nil {
+		dataToSet["identifier"] = *req.Modifications.Identifier
+	}
+
+	if req.Modifications.Description != nil {
+		dataToSet["description"] = *req.Modifications.Description
+	}
+
+	if req.Modifications.Status != nil {
+		dataToSet["status"] = *req.Modifications.Status
+	}
+
+	if req.Modifications.Category != nil {
+		dataToSet["category"] = *req.Modifications.Category
+	}
+
+	query, args, err := sq.Update("assets").
+		SetMap(dataToSet).
+		Where(sq.Eq{"id": *req.ID}).
+		ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sql query: %w", err)
+	}
+
+	asset, err := ReadAsset(db, req.ID, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get asset: %w", err)
+	}
+
+	return asset, nil
+}
+
 type ListCheckoutsRequest struct {
 	Limit *uint64 `json:"limit"`
 }
