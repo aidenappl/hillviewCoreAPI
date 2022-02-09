@@ -42,7 +42,7 @@ func main() {
 
 	edit := admin.PathPrefix("/edit").Subrouter()
 
-	edit.HandleFunc("/asset", routers.HandleEditAsset).Methods(http.MethodPost)
+	edit.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPost)
 
 	// Admin Lists
 
