@@ -34,17 +34,33 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		Where(sq.Eq{"video_statuses.id": 1})
 
 	if req.IncludeArchived {
-		q = q.Where(sq.Eq{"video_statuses.id": 4})
+		q = q.Where(sq.Or{
+			sq.Eq{"video_statuses.id": 4},
+			sq.Eq{"video_statuses.id": 1},
+		})
 	}
 
 	if req.IncludeDrafts {
-		q = q.Where(sq.Eq{"video_statuses.id": 2})
+		q = q.Where(sq.Or{
+			sq.Eq{"video_statuses.id": 2},
+			sq.Eq{"video_statuses.id": 1},
+		})
+	}
+
+	if req.IncludeDrafts && req.IncludeArchived {
+		q = q.Where(sq.Or{
+			sq.Eq{"video_statuses.id": 2},
+			sq.Eq{"video_statuses.id": 4},
+			sq.Eq{"video_statuses.id": 1},
+		})
 	}
 
 	query, args, err := q.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create query: %w", err)
 	}
+
+	fmt.Println(query)
 
 	rows, err := db.Query(query, args...)
 	if err != nil {
