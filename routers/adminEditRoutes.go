@@ -56,6 +56,7 @@ type HandleEditVideoRequest struct {
 	Thumbnail   *string `json:"thumbnail"`
 	Description *string `json:"description"`
 	URL         *string `json:"url"`
+	Status      *int    `json:"status"`
 }
 
 func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +79,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 			Thumbnail:   body.Thumbnail,
 			Description: body.Description,
 			URL:         body.URL,
+			Status:      body.Status,
 		},
 	})
 	if err != nil {
