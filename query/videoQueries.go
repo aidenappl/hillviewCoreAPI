@@ -9,12 +9,14 @@ import (
 )
 
 type ListVideosRequest struct {
-	Limit *uint64
+	Limit           *uint64
+	IncludeArchived bool
+	IncludeDrafts   bool
 }
 
 func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error) {
 
-	query, args, err := sq.Select(
+	q := sq.Select(
 		"videos.id",
 		"videos.title",
 		"videos.description",
@@ -29,7 +31,17 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		OrderBy("videos.id DESC").
 		Limit(*req.Limit).
-		ToSql()
+		Where(sq.Eq{"video_statuses.id": 1})
+
+	if req.IncludeArchived {
+		q = q.Where(sq.Eq{"video_statuses.id": 4})
+	}
+
+	if req.IncludeDrafts {
+		q = q.Where(sq.Eq{"video_statuses.id": 2})
+	}
+
+	query, args, err := q.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create query: %w", err)
 	}
@@ -82,6 +94,7 @@ type VideoModifications struct {
 	Thumbnail   *string `json:"thumbnail"`
 	URL         *string `json:"url"`
 	Description *string `json:"description"`
+	Status      *int    `json:"status"`
 }
 
 func EditVideo(db db.Queryable, req EditVideoRequest) (*structs.Video, error) {
@@ -109,6 +122,10 @@ func EditVideo(db db.Queryable, req EditVideoRequest) (*structs.Video, error) {
 
 	if req.Modifications.URL != nil {
 		dataToSet["url"] = *req.Modifications.URL
+	}
+
+	if req.Modifications.Status != nil {
+		dataToSet["status"] = *req.Modifications.Status
 	}
 
 	query, args, err := sq.Update("videos").

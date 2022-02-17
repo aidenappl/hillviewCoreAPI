@@ -45,6 +45,12 @@ func main() {
 	edit.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPost)
 	edit.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPost)
 
+	// Admin Deletes
+
+	delete := admin.PathPrefix("/delete").Subrouter()
+
+	delete.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleDeleteVideo))).Methods(http.MethodPost)
+
 	// Admin Lists
 
 	list := admin.PathPrefix("/list").Subrouter()

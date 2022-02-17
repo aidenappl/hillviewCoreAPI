@@ -1,5 +1,9 @@
 package structs
 
+var (
+	VideoStatusDeleted = 4
+)
+
 type Video struct {
 	ID          int         `json:"id"`
 	Title       string      `json:"title"`

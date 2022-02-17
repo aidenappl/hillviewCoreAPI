@@ -130,7 +130,9 @@ func HandleListVideos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	videos, err := query.ListVideos(db.DB, query.ListVideosRequest{
-		Limit: &limitInt,
+		Limit:           &limitInt,
+		IncludeArchived: true,
+		IncludeDrafts:   true,
 	})
 	if err != nil {
 		http.Error(w, "failed to execute query: "+err.Error(), http.StatusInternalServerError)
