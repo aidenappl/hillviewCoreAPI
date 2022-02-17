@@ -30,30 +30,19 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		OrderBy("videos.id DESC").
-		Limit(*req.Limit).
-		Where(sq.Eq{"video_statuses.id": 1})
+		Limit(*req.Limit)
+
+	wherein := sq.Or{sq.Eq{"video_statuses.id": 1}}
 
 	if req.IncludeArchived {
-		q = q.Where(sq.Or{
-			sq.Eq{"video_statuses.id": 4},
-			sq.Eq{"video_statuses.id": 1},
-		})
+		wherein = sq.Or{wherein, sq.Eq{"video_statuses.id": 2}}
 	}
 
 	if req.IncludeDrafts {
-		q = q.Where(sq.Or{
-			sq.Eq{"video_statuses.id": 2},
-			sq.Eq{"video_statuses.id": 1},
-		})
+		wherein = sq.Or{wherein, sq.Eq{"video_statuses.id": 3}}
 	}
 
-	if req.IncludeDrafts && req.IncludeArchived {
-		q = q.Where(sq.Or{
-			sq.Eq{"video_statuses.id": 2},
-			sq.Eq{"video_statuses.id": 4},
-			sq.Eq{"video_statuses.id": 1},
-		})
-	}
+	q = q.Where(wherein)
 
 	query, args, err := q.ToSql()
 	if err != nil {
