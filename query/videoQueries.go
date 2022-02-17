@@ -32,14 +32,16 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		OrderBy("videos.id DESC").
 		Limit(*req.Limit)
 
-	wherein := sq.Or{sq.Eq{"video_statuses.id": 1}}
+	wherein := sq.Or{}
+
+	wherein = append(wherein, sq.Eq{"videos.status": 1})
 
 	if req.IncludeArchived {
-		wherein = sq.Or{wherein, sq.Eq{"video_statuses.id": 2}}
+		wherein = append(wherein, sq.Eq{"video_statuses.id": 4})
 	}
 
 	if req.IncludeDrafts {
-		wherein = sq.Or{wherein, sq.Eq{"video_statuses.id": 3}}
+		wherein = append(wherein, sq.Eq{"video_statuses.id": 2})
 	}
 
 	q = q.Where(wherein)
