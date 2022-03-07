@@ -63,6 +63,12 @@ func main() {
 
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
 
+	// Admin Searcher
+
+	search := r.PathPrefix("/search").Subrouter()
+
+	search.HandleFunc("/mobileUsers", routers.HandleSearchAdminUsers).Methods(http.MethodGet)
+
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
 

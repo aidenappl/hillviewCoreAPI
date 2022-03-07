@@ -8,6 +8,67 @@ import (
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
+type SearchMobileUsersRequest struct {
+	Search string
+	Limit  *int
+}
+
+func SearchMobileUsers(db db.Queryable, req SearchMobileUsersRequest) ([]*structs.MobileUser, error) {
+	if req.Limit == nil {
+		// return nil, fmt.Errorf("missing limit")
+	}
+
+	query, args, err := sq.Select(
+		"users.id",
+		"users.name",
+		"users.identifier",
+		"users.email",
+		"users.profile_image_url",
+		"users.inserted_at",
+	).
+		From("users").
+		Where(sq.Or{
+			sq.Like{"users.name": "%" + req.Search + "%"},
+			sq.Like{"users.identifier": "%" + req.Search + "%"},
+			sq.Like{"users.email": "%" + req.Search + "%"},
+		}).
+		ToSql()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run sql query: %w", err)
+	}
+
+	defer rows.Close()
+
+	users := []*structs.MobileUser{}
+
+	for rows.Next() {
+
+		user := structs.MobileUser{}
+		err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Identifier,
+			&user.Email,
+			&user.ProfileImageURL,
+			&user.InsertedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan sql rows: %w", err)
+		}
+
+		users = append(users, &user)
+
+	}
+
+	return users, nil
+}
+
 type ListMobileUsersRequest struct {
 	Limit *uint64 `json:"limit"`
 }
