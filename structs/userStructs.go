@@ -17,7 +17,7 @@ type User struct {
 type UserTS struct {
 	ID                       *int                          `json:"id,omitempty"`
 	Username                 *string                       `json:"username,omitempty"`
-	Name                     *string                       `json:"name.omitempty"`
+	Name                     *string                       `json:"name,omitempty"`
 	Email                    *string                       `json:"email,omitempty"`
 	ProfileImageURL          *string                       `json:"profile_image_url,omitempty"`
 	Authentication           *GeneralNST                   `json:"authentication,omitempty"`
