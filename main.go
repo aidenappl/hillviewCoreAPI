@@ -38,6 +38,12 @@ func main() {
 
 	admin := r.PathPrefix("/admin").Subrouter()
 
+	// Admin Creators
+
+	create := admin.PathPrefix("/create").Subrouter()
+
+	create.Handle("/link", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.CreateLink))).Methods(http.MethodPost)
+
 	// Admin Edits
 
 	edit := admin.PathPrefix("/edit").Subrouter()
@@ -62,6 +68,7 @@ func main() {
 	list.Handle("/checkouts/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
 
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
+	list.Handle("/links", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListLinks))).Methods(http.MethodGet)
 
 	// Admin Searcher
 
