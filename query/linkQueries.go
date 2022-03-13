@@ -53,7 +53,7 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		"users.profile_image_url",
 	).
 		From("links").
-		OrderBy("links.id").
+		OrderBy("links.id DESC").
 		Join("users ON links.created_by = users.id").
 		Limit(*req.Limit).
 		ToSql()
