@@ -6,6 +6,7 @@ import (
 
 	"github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/query"
+	"github.com/hillview.tv/coreAPI/structs"
 )
 
 type CreateLinkRequest struct {
@@ -31,9 +32,12 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user := r.Context().Value("user").(structs.User)
+
 	err = query.CreateLink(db.DB, query.CreateLinkRequest{
 		Route:    body.Route,
 		Endpoint: body.Endpoint,
+		Creator:  &user.ID,
 	})
 	if err != nil {
 		w.Write([]byte(err.Error()))

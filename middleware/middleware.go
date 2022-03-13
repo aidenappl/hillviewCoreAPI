@@ -167,10 +167,19 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		}
 
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserModelCtxKey, user)
-		ctx = context.WithValue(ctx, JWTClaimsCtxKey, claims)
-
+		ctx = context.WithValue(ctx, "user", structs.User{
+			ID:                       user.ID,
+			Username:                 user.Username,
+			Email:                    user.Email,
+			Name:                     user.Name,
+			InsertedAt:               user.InsertedAt,
+			LastActive:               user.LastActive,
+			ProfileImageURL:          user.ProfileImageURL,
+			Authentication:           user.Authentication,
+			AuthenticationStrategies: user.AuthenticationStrategies,
+		})
 		r = r.WithContext(ctx)
+
 		next.ServeHTTP(w, r)
 	})
 }

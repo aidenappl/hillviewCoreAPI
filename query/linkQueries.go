@@ -11,14 +11,16 @@ import (
 type CreateLinkRequest struct {
 	Route    *string `json:"route"`
 	Endpoint *string `json:"endpoint"`
+	Creator  *int    `json:"user"`
 }
 
 func CreateLink(db db.Queryable, req CreateLinkRequest) error {
 	query, args, err := sq.Insert("links").
-		Columns("route", "destination").
+		Columns("route", "destination", "created_by").
 		Values(
 			req.Route,
 			req.Endpoint,
+			req.Creator,
 		).
 		ToSql()
 	if err != nil {
