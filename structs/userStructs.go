@@ -14,6 +14,18 @@ type User struct {
 	AuthenticationStrategies *UserAuthenticationStrategies `json:"strategies,omitempty"`
 }
 
+type UserTS struct {
+	ID                       *int                          `json:"id,omitempty"`
+	Username                 *string                       `json:"username,omitempty"`
+	Name                     *string                       `json:"name.omitempty"`
+	Email                    *string                       `json:"email,omitempty"`
+	ProfileImageURL          *string                       `json:"profile_image_url,omitempty"`
+	Authentication           *GeneralNST                   `json:"authentication,omitempty"`
+	InsertedAt               *time.Time                    `json:"inserted_at,omitempty"`
+	LastActive               *time.Time                    `json:"last_active,omitempty"`
+	AuthenticationStrategies *UserAuthenticationStrategies `json:"strategies,omitempty"`
+}
+
 type UserAuthenticationStrategies struct {
 	UserID   *int    `json:"user_id,omitempty"`
 	GoogleID *string `json:"google_id"`

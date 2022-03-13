@@ -5,5 +5,6 @@ type Link struct {
 	Route       string `json:"route"`
 	Destination string `json:"destination"`
 	Active      bool   `json:"active"`
+	Creator     UserTS `json:"creator"`
 	InsertedAt  string `json:"inserted_at"`
 }
