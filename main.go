@@ -65,7 +65,9 @@ func main() {
 	list.Handle("/mobileUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
 
 	list.Handle("/assets/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAssets))).Methods(http.MethodGet)
-	list.Handle("/checkouts/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
+	list.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
+
+	list.Handle("/openCheckouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListOpenCheckouts))).Methods(http.MethodGet)
 
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
 	list.Handle("/links", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListLinks))).Methods(http.MethodGet)
