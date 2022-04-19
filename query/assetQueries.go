@@ -20,6 +20,7 @@ type AssetModifications struct {
 	Description *string `json:"description"`
 	Status      *int    `json:"status"`
 	Category    *int    `json:"category"`
+	Notes       *string `json:"notes"`
 }
 
 func EditAsset(db db.Queryable, req EditAssetRequest) (*structs.Asset, error) {
@@ -32,6 +33,7 @@ func EditAsset(db db.Queryable, req EditAssetRequest) (*structs.Asset, error) {
 	}
 
 	dataToSet := map[string]interface{}{}
+	metadataSet := map[string]interface{}{}
 
 	if req.Modifications.Name != nil {
 		dataToSet["name"] = *req.Modifications.Name
@@ -55,6 +57,36 @@ func EditAsset(db db.Queryable, req EditAssetRequest) (*structs.Asset, error) {
 
 	if req.Modifications.Category != nil {
 		dataToSet["category"] = *req.Modifications.Category
+	}
+
+	if req.Modifications.Notes != nil {
+		metadataSet["notes"] = *req.Modifications.Notes
+
+		query, args, err := sq.Update("asset_metadata").
+			SetMap(metadataSet).
+			Where(sq.Eq{"asset_id": *req.ID}).
+			ToSql()
+		if err != nil {
+			return nil, fmt.Errorf("failed to build sql query: %w", err)
+		}
+
+		_, err = db.Exec(query, args...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute sql query: %w", err)
+		}
+	}
+
+	if len(dataToSet) == 0 && len(metadataSet) == 0 {
+		return nil, fmt.Errorf("no modifications provided")
+	}
+
+	if len(dataToSet) == 0 && len(metadataSet) > 0 {
+		asset, err := ReadAsset(db, req.ID, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get asset: %w", err)
+		}
+
+		return asset, nil
 	}
 
 	query, args, err := sq.Update("assets").

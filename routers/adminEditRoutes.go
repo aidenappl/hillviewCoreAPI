@@ -15,6 +15,7 @@ type HandleEditAssetRequest struct {
 	Identifier  *string `json:"identifier"`
 	Description *string `json:"description"`
 	Category    *int    `json:"category"`
+	Notes       *string `json:"notes"`
 	Status      *int    `json:"status"`
 }
 
@@ -40,10 +41,11 @@ func HandleEditAsset(w http.ResponseWriter, r *http.Request) {
 			Description: body.Description,
 			Category:    body.Category,
 			Status:      body.Status,
+			Notes:       body.Notes,
 		},
 	})
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
