@@ -9,7 +9,9 @@ import (
 )
 
 type ListVideosRequest struct {
-	Limit           *uint64
+	Limit           uint64
+	Offset          uint64
+	PlaylistID      *int
 	IncludeArchived bool
 	IncludeDrafts   bool
 }
@@ -30,7 +32,8 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		OrderBy("videos.id DESC").
-		Limit(*req.Limit)
+		Limit(req.Limit).
+		Offset(req.Offset)
 
 	wherein := sq.Or{}
 
@@ -45,6 +48,11 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 	}
 
 	q = q.Where(wherein)
+
+	if req.PlaylistID != nil {
+		q = q.LeftJoin("playlist_associations ON videos.id = playlist_associations.video_id")
+		q = q.Where(sq.Eq{"playlist_associations.playlist_id": *req.PlaylistID})
+	}
 
 	query, args, err := q.ToSql()
 	if err != nil {
