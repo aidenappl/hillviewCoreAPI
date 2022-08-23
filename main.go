@@ -50,6 +50,7 @@ func main() {
 
 	edit.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPost)
 	edit.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPost)
+	edit.Handle("/mobileUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditMobileAccount))).Methods(http.MethodPost)
 
 	// Admin Deletes
 
@@ -62,7 +63,7 @@ func main() {
 	list := admin.PathPrefix("/list").Subrouter()
 
 	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
-	list.Handle("/mobileUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
+	list.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
 
 	list.Handle("/assets/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAssets))).Methods(http.MethodGet)
 	list.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
@@ -72,12 +73,6 @@ func main() {
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
 	list.Handle("/playlists", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListPlaylists))).Methods(http.MethodGet)
 	list.Handle("/links", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListLinks))).Methods(http.MethodGet)
-
-	// Admin Searcher
-
-	search := r.PathPrefix("/search").Subrouter()
-
-	search.HandleFunc("/mobileUsers", routers.HandleSearchAdminUsers).Methods(http.MethodGet)
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)

@@ -8,6 +8,36 @@ import (
 	"github.com/hillview.tv/coreAPI/query"
 )
 
+type HandleEditMobileAccountRequest struct {
+	ID     *int                              `json:"id"`
+	Fields *query.MobileAccountModifications `json:"fields"`
+}
+
+func HandleEditMobileAccount(w http.ResponseWriter, r *http.Request) {
+	body := HandleEditMobileAccountRequest{}
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if body.ID == nil || body.Fields == nil {
+		http.Error(w, "missing required keys", http.StatusBadRequest)
+		return
+	}
+
+	user, err := query.EditMobileAccount(db.AssetDB, query.EditMobileAccountRequest{
+		ID:            body.ID,
+		Modifications: body.Fields,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+}
+
 type HandleEditAssetRequest struct {
 	ID          *int    `json:"id"`
 	Name        *string `json:"name"`

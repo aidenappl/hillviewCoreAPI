@@ -2,6 +2,11 @@ package structs
 
 import "time"
 
+type GeneralNSM struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	ShortName string `json:"short_name"`
+}
 type User struct {
 	ID                       int                           `json:"id"`
 	Username                 *string                       `json:"username"`
