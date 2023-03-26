@@ -252,6 +252,61 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 
 }
 
+//
+// Edit Admin User
+//
+
+type EditAdminAccountRequest struct {
+	ID            int                       `json:"id"`
+	Modifications AdminAccountModifications `json:"modifications"`
+}
+
+type AdminAccountModifications struct {
+	Name            *string `json:"name"`
+	Email           *string `json:"email"`
+	Authentication  *int    `json:"authentication"`
+	ProfileImageURL *string `json:"profile_image_url"`
+	Username        *string `json:"username"`
+}
+
+func EditAdminAccount(db db.Queryable, req EditAdminAccountRequest) (*structs.User, error) {
+	q := sq.Update("users").
+		Where(sq.Eq{"id": req.ID})
+
+	if req.Modifications.Name != nil {
+		q = q.Set("name", req.Modifications.Name)
+	}
+
+	if req.Modifications.Email != nil {
+		q = q.Set("email", req.Modifications.Email)
+	}
+
+	if req.Modifications.Authentication != nil {
+		q = q.Set("authentication", req.Modifications.Authentication)
+	}
+
+	if req.Modifications.ProfileImageURL != nil {
+		q = q.Set("profile_image_url", req.Modifications.ProfileImageURL)
+	}
+
+	if req.Modifications.Username != nil {
+		q = q.Set("username", req.Modifications.Username)
+	}
+
+	query, args, err := q.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run sql query: %w", err)
+	}
+
+	return nil, nil
+
+}
+
 func InsertRequestLog(db db.Queryable, userID int, route string, method string) error {
 	query, args, err := sq.Insert("request_logs").
 		Columns(

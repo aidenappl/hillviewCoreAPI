@@ -51,6 +51,7 @@ func main() {
 	edit.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPost)
 	edit.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPost)
 	edit.Handle("/mobileUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditMobileAccount))).Methods(http.MethodPost)
+	edit.Handle("/adminUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAdminAccount))).Methods(http.MethodPost)
 
 	// Admin Deletes
 
