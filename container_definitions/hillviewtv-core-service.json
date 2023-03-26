@@ -64,7 +64,7 @@
         "dockerLabels": null,
         "systemControls": null,
         "privileged": null,
-        "name": "hillviewtv-core-service"
+        "name": "core-service"
       }
     ],
     "placementConstraints": [],
@@ -75,7 +75,7 @@
       "EC2"
     ],
     "taskDefinitionArn": "arn:aws:ecs:us-west-1:605737100658:task-definition/hillviewtv-core-service:1",
-    "family": "hillviewtv-core-service",
+    "family": "core-service",
     "requiresAttributes": [
       {
         "targetId": null,
