@@ -126,6 +126,7 @@ type HandleEditAdminRequest struct {
 	ID             *int    `json:"id"`
 	Name           *string `json:"name"`
 	Email          *string `json:"email"`
+	Username       *string `json:"username"`
 	Authentication *int    `json:"authentication"`
 }
 
@@ -137,7 +138,7 @@ func HandleEditAdminAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.ID == nil && !(body.Name == nil && body.Email == nil && body.Authentication == nil) {
+	if body.ID == nil && !(body.Name == nil && body.Email == nil && body.Authentication == nil && body.Username == nil) {
 		http.Error(w, "missing required keys", http.StatusBadRequest)
 		return
 	}
@@ -148,6 +149,7 @@ func HandleEditAdminAccount(w http.ResponseWriter, r *http.Request) {
 			Name:           body.Name,
 			Email:          body.Email,
 			Authentication: body.Authentication,
+			Username:       body.Username,
 		},
 	})
 	if err != nil {
