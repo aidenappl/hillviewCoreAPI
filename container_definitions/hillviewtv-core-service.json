@@ -1,134 +1,68 @@
 {
-    "ipcMode": null,
-    "executionRoleArn": "arn:aws:iam::605737100658:role/HillviewTVAPIECSTaskExecutionRole",
-    "containerDefinitions": [
-      {
-        "dnsSearchDomains": null,
-        "environmentFiles": null,
-        "logConfiguration": {},
-        "entryPoint": null,
-        "portMappings": [
-          {
-            "hostPort": 0,
-            "protocol": "tcp",
-        "containerPort": 8000
-          }
-        ],
-        "command": null,
-        "linuxParameters": null,
-        "cpu": 0,
-        "environment": [
-          {
-            "name": "PORT",
-            "value": "8000"
-          }
-        ],
-        "resourceRequirements": null,
-        "ulimits": null,
-        "dnsServers": null,
-        "mountPoints": [],
-        "workingDirectory": null,
-        "secrets": [
-          {
-            "valueFrom": "/env/hillviewtv-auth-service/DATABASE_DSN",
-            "name": "DATABASE_DSN"
-          },
-          {
-            "valueFrom": "/env/hillviewtv-asset-service/DATABASE_DSN",
-            "name": "ASSET_DATABASE_DSN"
-          },
-          {
-            "valueFrom": "/env/hillviewtv-auth-service/JWT_SIGNING_KEY",
-            "name": "JWT_SIGNING_KEY"
-          }
-        ],
-        "dockerSecurityOptions": null,
-        "memory": 256,
-        "memoryReservation": null,
-        "volumesFrom": [],
-        "stopTimeout": null,
-        "image": "605737100658.dkr.ecr.us-west-1.amazonaws.com/hillviewtv-core-service:c6d92c6",
-        "startTimeout": null,
-        "firelensConfiguration": null,
-        "dependsOn": null,
-        "disableNetworking": null,
-        "interactive": null,
-        "healthCheck": null,
-        "essential": true,
-        "links": null,
-        "hostname": null,
-        "extraHosts": null,
-        "pseudoTerminal": null,
-        "user": null,
-        "readonlyRootFilesystem": null,
-        "dockerLabels": null,
-        "systemControls": null,
-        "privileged": null,
-        "name": "core-service"
-      }
-    ],
-    "placementConstraints": [],
-    "memory": "256",
-    "taskRoleArn": "arn:aws:iam::605737100658:role/HillviewTVAPIECSTaskExecutionRole",
-    "compatibilities": [
-      "EXTERNAL",
-      "EC2"
-    ],
-    "taskDefinitionArn": "arn:aws:ecs:us-west-1:605737100658:task-definition/hillviewtv-core-service:1",
-    "family": "core-service",
-    "requiresAttributes": [
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "ecs.capability.execution-role-awslogs"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.ecr-auth"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.task-iam-role"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "ecs.capability.execution-role-ecr-pull"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "ecs.capability.secrets.ssm.environment-variables"
-      }
-    ],
-    "pidMode": null,
-    "requiresCompatibilities": [
-      "EC2"
-    ],
-    "networkMode": null,
-    "cpu": null,
-    "revision": 11,
-    "status": "ACTIVE",
-    "inferenceAccelerators": null,
-    "proxyConfiguration": null,
-    "volumes": []
-  }
+  "taskDefinitionArn": "arn:aws:ecs:us-west-1:605737100658:task-definition/hillviewtv-core-service:37",
+  "containerDefinitions": [
+    {
+      "name": "hillviewtv-core-service",
+      "image": "605737100658.dkr.ecr.us-west-1.amazonaws.com/hillviewtv-core-service:b66978a",
+      "cpu": 0,
+      "memory": 256,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "8000"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "DATABASE_DSN",
+          "valueFrom": "/env/hillviewtv-auth-service/DATABASE_DSN"
+        },
+        {
+          "name": "ASSET_DATABASE_DSN",
+          "valueFrom": "/env/hillviewtv-asset-service/DATABASE_DSN"
+        },
+        {
+          "name": "JWT_SIGNING_KEY",
+          "valueFrom": "/env/hillviewtv-auth-service/JWT_SIGNING_KEY"
+        }
+      ]
+    }
+  ],
+  "family": "hillviewtv-core-service",
+  "taskRoleArn": "arn:aws:iam::605737100658:role/HillviewTVAPIECSTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::605737100658:role/HillviewTVAPIECSTaskExecutionRole",
+  "revision": 37,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "ecs.capability.secrets.ssm.environment-variables"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": ["EXTERNAL", "EC2"],
+  "requiresCompatibilities": ["EC2"],
+  "memory": "256",
+  "registeredAt": "2023-03-26T19:49:44.576Z",
+  "registeredBy": "arn:aws:iam::605737100658:user/github-actions-key",
+  "tags": []
+}
