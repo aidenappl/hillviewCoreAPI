@@ -200,6 +200,7 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 	).
 		From("users").
 		Join("user_types ON user_types.id = users.authentication").
+		Where(sq.NotEq{"user_types.id": 9}).
 		Limit(*req.Limit).
 		ToSql()
 	if err != nil {
