@@ -8,7 +8,7 @@ import (
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
-func ReadActiveCheckouts(db db.Queryable, id int) (*structs.AssetCheckout, error) {
+func ReadActiveCheckouts(db db.Queryable, id int) (*structs.Checkout, error) {
 
 	query, args, err := sq.Select(
 		"asset_checkouts.id",
@@ -43,7 +43,7 @@ func ReadActiveCheckouts(db db.Queryable, id int) (*structs.AssetCheckout, error
 
 	defer rows.Close()
 
-	var checkout structs.AssetCheckout
+	var checkout structs.Checkout
 	var checkout_status structs.GeneralNSN
 
 	err = rows.Scan(
