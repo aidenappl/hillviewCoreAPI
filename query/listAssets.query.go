@@ -59,6 +59,7 @@ func ListAssets(db db.Queryable, req ListAssetsRequest) (*[]structs.Asset, error
 		Join("asset_statuses ON assets.status = asset_statuses.id").
 		Join("asset_categories ON assets.category = asset_categories.id").
 		LeftJoin("asset_metadata ON assets.id = asset_metadata.asset_id").
+		Where(sq.NotEq{"asset_statuses.id": 7}).
 		OrderBy("assets.id " + *req.Sort).
 		Limit(uint64(req.Limit)).
 		Offset(uint64(req.Offset))
