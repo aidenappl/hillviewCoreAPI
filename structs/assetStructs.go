@@ -2,18 +2,6 @@ package structs
 
 import "time"
 
-type Asset struct {
-	ID          int64          `json:"id"`
-	Name        *string        `json:"name"`
-	ImageURL    *string        `json:"image_url"`
-	Identifier  *string        `json:"identifier"`
-	Description *string        `json:"description"`
-	Category    *GeneralNSN    `json:"category"`
-	Status      *GeneralNSN    `json:"status"`
-	Metadata    *AssetMetadata `json:"metadata"`
-	ActiveTab   *AssetCheckout `json:"active_tab"`
-}
-
 type AssetCheckout struct {
 	ID             int         `json:"id"`
 	AssetID        int         `json:"asset_id"`
@@ -24,6 +12,11 @@ type AssetCheckout struct {
 	TimeIn         *time.Time  `json:"time_in"`
 	ExpectedIn     *time.Time  `json:"expected_in"`
 	User           *MobileUser `json:"user"`
+}
+
+type AssetCheckoutOmitted struct {
+	ID             int `json:"id"`
+	AssociatedUser int `json:"associated_user"`
 }
 
 type AssetMetadata struct {

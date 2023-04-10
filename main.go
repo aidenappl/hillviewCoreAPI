@@ -48,9 +48,7 @@ func main() {
 
 	edit := admin.PathPrefix("/edit").Subrouter()
 
-	edit.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPost)
 	edit.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPost)
-	edit.Handle("/mobileUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditMobileAccount))).Methods(http.MethodPost)
 	edit.Handle("/adminUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAdminAccount))).Methods(http.MethodPost)
 
 	// Admin Deletes
@@ -66,7 +64,6 @@ func main() {
 	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
 	list.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
 
-	list.Handle("/assets/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAssets))).Methods(http.MethodGet)
 	list.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
 
 	list.Handle("/openCheckouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListOpenCheckouts))).Methods(http.MethodGet)
@@ -78,6 +75,13 @@ func main() {
 	// Public Lists
 	pubList := r.PathPrefix("/list").Subrouter()
 	pubList.HandleFunc("/mobileUsers", routers.HandleListMobileUsers).Methods(http.MethodGet)
+
+	// V2.1 Handlers
+	admin.Handle("/video/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetVideo))).Methods(http.MethodGet)
+	admin.Handle("/videos", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideo))).Methods(http.MethodGet)
+
+	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)
+	admin.Handle("/assets", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAsset))).Methods(http.MethodGet)
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
