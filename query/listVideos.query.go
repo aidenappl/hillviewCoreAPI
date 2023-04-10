@@ -21,6 +21,8 @@ type ListVideosRequest struct {
 	Search     *string
 	PlaylistID *int
 	ID         *int
+	Identifier *string
+	UseOr      bool
 }
 
 func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error) {
@@ -45,6 +47,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 
 	q := sq.Select(
 		"videos.id",
+		"videos.uuid",
 		"videos.title",
 		"videos.description",
 		"videos.thumbnail",
@@ -60,24 +63,59 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
-	if req.PlaylistID != nil {
-		q = q.LeftJoin("playlist_associations ON videos.id = playlist_associations.video_id")
-		q = q.Where(sq.Eq{"playlist_associations.playlist_id": *req.PlaylistID})
-	}
+	if req.UseOr {
+		wherein := sq.Or{}
 
-	if req.ID != nil {
-		q = q.Where(sq.Eq{"videos.id": *req.ID})
-	}
+		if req.PlaylistID != nil {
+			q = q.LeftJoin("playlist_associations ON videos.id = playlist_associations.video_id")
+			wherein = append(wherein, sq.Eq{"playlist_associations.playlist_id": *req.PlaylistID})
+		}
 
-	if req.Statuses != nil {
-		q = q.Where(sq.Eq{"videos.status": *req.Statuses})
-	}
+		if req.ID != nil {
+			wherein = append(wherein, sq.Eq{"videos.id": *req.ID})
+		}
 
-	if req.Search != nil {
-		q = q.Where(sq.Or{
-			sq.Like{"videos.title": "%" + *req.Search + "%"},
-			sq.Like{"videos.description": "%" + *req.Search + "%"},
-		})
+		if req.Identifier != nil {
+			wherein = append(wherein, sq.Eq{"videos.uuid": *req.Identifier})
+		}
+
+		if req.Statuses != nil {
+			wherein = append(wherein, sq.Eq{"videos.status": *req.Statuses})
+		}
+
+		if req.Search != nil {
+			wherein = append(wherein, sq.Or{
+				sq.Like{"videos.title": "%" + *req.Search + "%"},
+				sq.Like{"videos.description": "%" + *req.Search + "%"},
+			})
+		}
+
+		q = q.Where(wherein)
+
+	} else {
+		if req.PlaylistID != nil {
+			q = q.LeftJoin("playlist_associations ON videos.id = playlist_associations.video_id")
+			q = q.Where(sq.Eq{"playlist_associations.playlist_id": *req.PlaylistID})
+		}
+
+		if req.ID != nil {
+			q = q.Where(sq.Eq{"videos.id": *req.ID})
+		}
+
+		if req.Identifier != nil {
+			q = q.Where(sq.Eq{"videos.uuid": *req.Identifier})
+		}
+
+		if req.Statuses != nil {
+			q = q.Where(sq.Eq{"videos.status": *req.Statuses})
+		}
+
+		if req.Search != nil {
+			q = q.Where(sq.Or{
+				sq.Like{"videos.title": "%" + *req.Search + "%"},
+				sq.Like{"videos.description": "%" + *req.Search + "%"},
+			})
+		}
 	}
 
 	query, args, err := q.ToSql()
@@ -100,6 +138,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 
 		err = rows.Scan(
 			&video.ID,
+			&video.UUID,
 			&video.Title,
 			&video.Description,
 			&video.Thumbnail,

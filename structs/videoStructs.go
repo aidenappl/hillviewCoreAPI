@@ -6,6 +6,7 @@ var (
 
 type Video struct {
 	ID          int         `json:"id"`
+	UUID        string      `json:"uuid"`
 	Title       string      `json:"title"`
 	Description string      `json:"description"`
 	Thumbnail   string      `json:"thumbnail"`
