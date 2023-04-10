@@ -81,6 +81,7 @@ func main() {
 	admin.Handle("/videos", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideo))).Methods(http.MethodGet)
 
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)
+	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPut)
 	admin.Handle("/assets", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAsset))).Methods(http.MethodGet)
 
 	// Launch API Listener
