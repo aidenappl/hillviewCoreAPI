@@ -3,12 +3,10 @@ name: Backend
 on: [push]
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
@@ -28,7 +26,6 @@ jobs:
     needs: build
     if: endsWith(github.ref, 'heads/main')
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -66,9 +63,8 @@ jobs:
         id: render-ecs-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-
           task-definition: container_definitions/${{ secrets.NAME }}.json
-          container-name: core-service
+          container-name: hillviewtv-core-service
           image: ${{ env.IMAGE }}
 
       - name: Update ECS service task definition
