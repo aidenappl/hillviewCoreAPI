@@ -84,6 +84,8 @@ func main() {
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPut)
 	admin.Handle("/assets", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAsset))).Methods(http.MethodGet)
 
+	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)
+
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
 
