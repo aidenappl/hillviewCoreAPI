@@ -64,8 +64,6 @@ func main() {
 	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
 	list.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
 
-	list.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
-
 	list.Handle("/openCheckouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListOpenCheckouts))).Methods(http.MethodGet)
 
 	list.Handle("/videos/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideos))).Methods(http.MethodGet)
@@ -83,6 +81,8 @@ func main() {
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPut)
 	admin.Handle("/assets", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAsset))).Methods(http.MethodGet)
+
+	admin.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
 
 	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)
 

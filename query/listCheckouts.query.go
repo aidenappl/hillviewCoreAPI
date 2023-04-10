@@ -8,26 +8,33 @@ import (
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
-type EditAssetRequest struct {
-	ID            *int                `json:"id"`
-	Modifications *AssetModifications `json:"modifications"`
+type ListCheckoutsRequest struct {
+	Limit  *int    `json:"limit"`
+	Offset *int    `json:"offset"`
+	Sort   *string `json:"sort"`
 }
 
-type AssetModifications struct {
-	Name        *string `json:"name"`
-	ImageURL    *string `json:"image_url"`
-	Identifier  *string `json:"identifier"`
-	Description *string `json:"description"`
-	Status      *int    `json:"status"`
-	Category    *int    `json:"category"`
-	Notes       *string `json:"notes"`
-}
+func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checkout, error) {
+	// check required fields
+	if req.Limit == nil {
+		return nil, fmt.Errorf("limit is required")
+	}
 
-type ListOpenCheckoutsRequest struct {
-	Limit *uint64 `json:"limit"`
-}
+	if req.Offset == nil {
+		return nil, fmt.Errorf("offset is required")
+	}
 
-func ListOpenCheckouts(db db.Queryable, req ListOpenCheckoutsRequest) ([]*structs.Checkout, error) {
+	if req.Sort == nil {
+		req.Sort = new(string)
+		*req.Sort = "desc"
+	}
+
+	// check sort formatting
+	if *req.Sort != "asc" && *req.Sort != "desc" {
+		return nil, fmt.Errorf("sort must be either asc or desc")
+	}
+
+	// build query
 	query, args, err := sq.Select(
 		"asset_checkouts.id",
 		"asset_checkouts.asset_id",
@@ -60,9 +67,9 @@ func ListOpenCheckouts(db db.Queryable, req ListOpenCheckoutsRequest) ([]*struct
 		LeftJoin("checkout_statuses ON asset_checkouts.checkout_status = checkout_statuses.id").
 		LeftJoin("assets ON asset_checkouts.asset_id = assets.id").
 		LeftJoin("users ON asset_checkouts.associated_user = users.id").
-		OrderBy("asset_checkouts.id DESC").
-		Where("asset_checkouts.checkout_status = 1").
-		Limit(*req.Limit).
+		OrderBy("asset_checkouts.id " + *req.Sort).
+		Limit(uint64(*req.Limit)).
+		Offset(uint64(*req.Offset)).
 		ToSql()
 
 	if err != nil {
@@ -121,9 +128,7 @@ func ListOpenCheckouts(db db.Queryable, req ListOpenCheckoutsRequest) ([]*struct
 		}
 
 		checkout.Asset = &asset
-
 		checkout.User = &user
-
 		checkout.CheckoutStatus = &checkout_status
 
 		checkouts = append(checkouts, &checkout)
