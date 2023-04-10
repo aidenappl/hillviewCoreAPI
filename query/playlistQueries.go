@@ -1,74 +1,66 @@
 package query
 
-import (
-	"fmt"
+// type ListPlaylistsRequest struct {
+// 	Limit  *uint64 `json:"limit"`
+// 	Offset *uint64 `json:"offset"`
+// }
 
-	sq "github.com/Masterminds/squirrel"
-	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/structs"
-)
+// func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) (*[]structs.Playlist, error) {
+// 	q := sq.Select(
+// 		"playlists.id",
+// 		"playlists.name",
+// 		"playlists.description",
+// 		"playlists.banner_image",
+// 		"playlists.route",
+// 		"playlists.inserted_at",
+// 	).
+// 		From("playlists").
+// 		OrderBy("playlists.id DESC").
+// 		Limit(*req.Limit).
+// 		Offset(*req.Offset)
 
-type ListPlaylistsRequest struct {
-	Limit  *uint64 `json:"limit"`
-	Offset *uint64 `json:"offset"`
-}
+// 	query, args, err := q.ToSql()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to build query: %v", err)
+// 	}
 
-func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) (*[]structs.Playlist, error) {
-	q := sq.Select(
-		"playlists.id",
-		"playlists.name",
-		"playlists.description",
-		"playlists.banner_image",
-		"playlists.route",
-		"playlists.inserted_at",
-	).
-		From("playlists").
-		OrderBy("playlists.id DESC").
-		Limit(*req.Limit).
-		Offset(*req.Offset)
+// 	rows, err := db.Query(query, args...)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to execute query: %v", err)
+// 	}
 
-	query, args, err := q.ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("failed to build query: %v", err)
-	}
+// 	defer rows.Close()
+// 	playlists := []structs.Playlist{}
 
-	rows, err := db.Query(query, args...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute query: %v", err)
-	}
+// 	for rows.Next() {
+// 		var playlist structs.Playlist
+// 		err := rows.Scan(
+// 			&playlist.ID,
+// 			&playlist.Name,
+// 			&playlist.Description,
+// 			&playlist.BannerImage,
+// 			&playlist.Route,
+// 			&playlist.InsertedAt,
+// 		)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to scan row: %v", err)
+// 		}
 
-	defer rows.Close()
-	playlists := []structs.Playlist{}
+// 		videos, err := ListVideos(db, ListVideosRequest{
+// 			Limit:           *req.Limit,
+// 			Offset:          *req.Offset,
+// 			PlaylistID:      &playlist.ID,
+// 			IncludeArchived: true,
+// 			IncludeDrafts:   true,
+// 		})
+// 		if err != nil {
+// 			return nil, fmt.Errorf("failed to list videos: %v", err)
+// 		}
 
-	for rows.Next() {
-		var playlist structs.Playlist
-		err := rows.Scan(
-			&playlist.ID,
-			&playlist.Name,
-			&playlist.Description,
-			&playlist.BannerImage,
-			&playlist.Route,
-			&playlist.InsertedAt,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan row: %v", err)
-		}
+// 		playlist.Videos = videos
 
-		videos, err := ListVideos(db, ListVideosRequest{
-			Limit:           *req.Limit,
-			Offset:          *req.Offset,
-			PlaylistID:      &playlist.ID,
-			IncludeArchived: true,
-			IncludeDrafts:   true,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to list videos: %v", err)
-		}
+// 		playlists = append(playlists, playlist)
+// 	}
 
-		playlist.Videos = videos
-
-		playlists = append(playlists, playlist)
-	}
-
-	return &playlists, nil
-}
+// 	return &playlists, nil
+// }
