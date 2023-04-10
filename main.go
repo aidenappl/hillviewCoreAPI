@@ -74,6 +74,7 @@ func main() {
 
 	// V2.1 Handlers
 	admin.Handle("/video/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetVideo))).Methods(http.MethodGet)
+	admin.Handle("/video/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPut)
 	admin.Handle("/videos", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideo))).Methods(http.MethodGet)
 
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)

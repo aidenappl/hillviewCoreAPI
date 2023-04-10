@@ -8,46 +8,6 @@ import (
 	"github.com/hillview.tv/coreAPI/query"
 )
 
-type HandleEditVideoRequest struct {
-	ID          *int    `json:"id"`
-	Title       *string `json:"title"`
-	Thumbnail   *string `json:"thumbnail"`
-	Description *string `json:"description"`
-	URL         *string `json:"url"`
-	Status      *int    `json:"status"`
-}
-
-func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
-	body := HandleEditVideoRequest{}
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if body.ID == nil && !(body.Title == nil && body.Thumbnail == nil && body.Description == nil && body.URL == nil) {
-		http.Error(w, "missing required keys", http.StatusBadRequest)
-		return
-	}
-
-	asset, err := query.EditVideo(db.DB, query.EditVideoRequest{
-		ID: body.ID,
-		Modifications: &query.VideoModifications{
-			Title:       body.Title,
-			Thumbnail:   body.Thumbnail,
-			Description: body.Description,
-			URL:         body.URL,
-			Status:      body.Status,
-		},
-	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(asset)
-}
-
 type HandleEditAdminRequest struct {
 	ID             *int    `json:"id"`
 	Name           *string `json:"name"`
