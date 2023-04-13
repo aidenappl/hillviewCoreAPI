@@ -36,32 +36,6 @@ func HandleListAdminUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-func HandleListLinks(w http.ResponseWriter, r *http.Request) {
-	limit := r.URL.Query().Get("limit")
-
-	if len(limit) == 0 {
-		http.Error(w, "missing limit param", http.StatusBadRequest)
-		return
-	}
-
-	limitInt, err := strconv.ParseUint(string(limit), 10, 64)
-	if err != nil {
-		http.Error(w, "failed to convert string to int: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	links, err := query.ListLinks(db.DB, query.ListLinksRequest{
-		Limit: &limitInt,
-	})
-	if err != nil {
-		http.Error(w, "failed to execute query: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(links)
-
-}
-
 type HandleListMobileUsersRequest struct {
 	Limit  *uint64 `json:"limit"`
 	Offset *uint64 `json:"offset"`
