@@ -40,8 +40,13 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 		"playlists.banner_image",
 		"playlists.route",
 		"playlists.inserted_at",
+
+		"playlist_statuses.id",
+		"playlist_statuses.name",
+		"playlist_statuses.short_name",
 	).
 		From("playlists").
+		Join("playlist_statuses ON playlists.status = playlist_statuses.id").
 		OrderBy("playlists.id DESC").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
@@ -72,6 +77,7 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 	var playlists []*structs.Playlist
 	for rows.Next() {
 		var playlist structs.Playlist
+		var status structs.GeneralNSM
 		err := rows.Scan(
 			&playlist.ID,
 			&playlist.Name,
@@ -79,10 +85,16 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 			&playlist.BannerImage,
 			&playlist.Route,
 			&playlist.InsertedAt,
+
+			&status.ID,
+			&status.Name,
+			&status.ShortName,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
+
+		playlist.Status = status
 
 		playlists = append(playlists, &playlist)
 	}
