@@ -13,6 +13,9 @@ type ListPlaylistsRequest struct {
 	Offset *int
 	Search *string
 	Sort   *string
+
+	// select fields
+	ID *int
 }
 
 func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playlist, error) {
@@ -50,6 +53,11 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 		OrderBy("playlists.id DESC").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
+
+	// add select fields
+	if req.ID != nil {
+		q = q.Where(sq.Eq{"playlists.id": *req.ID})
+	}
 
 	// add search
 	if req.Search != nil {
