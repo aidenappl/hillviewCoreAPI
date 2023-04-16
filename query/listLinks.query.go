@@ -13,6 +13,9 @@ type ListLinksRequest struct {
 	Offset *int
 	Search *string
 	Sort   *string
+
+	// params
+	ID *int
 }
 
 func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
@@ -50,6 +53,11 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		Join("users ON links.created_by = users.id").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
+
+	// add params
+	if req.ID != nil {
+		q = q.Where(sq.Eq{"links.id": *req.ID})
+	}
 
 	// add search
 	if req.Search != nil {
