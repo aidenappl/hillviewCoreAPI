@@ -106,28 +106,3 @@ func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(users)
 }
-
-func HandleListOpenCheckouts(w http.ResponseWriter, r *http.Request) {
-	limit := r.URL.Query().Get("limit")
-
-	if len(limit) == 0 {
-		http.Error(w, "missing limit param", http.StatusBadRequest)
-		return
-	}
-
-	limitInt, err := strconv.ParseUint(string(limit), 10, 64)
-	if err != nil {
-		http.Error(w, "failed to convert string to int: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	checkouts, err := query.ListOpenCheckouts(db.AssetDB, query.ListOpenCheckoutsRequest{
-		Limit: &limitInt,
-	})
-	if err != nil {
-		http.Error(w, "failed to execute query: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(checkouts)
-}

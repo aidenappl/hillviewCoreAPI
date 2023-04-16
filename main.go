@@ -34,41 +34,12 @@ func main() {
 	// Track & Update Last Active
 	r.Use(middleware.TokenHandlers)
 
-	// Core Admin
-
-	admin := r.PathPrefix("/admin").Subrouter()
-
-	// Admin Creators
-
-	create := admin.PathPrefix("/create").Subrouter()
-
-	create.Handle("/link", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.CreateLink))).Methods(http.MethodPost)
-
-	// Admin Edits
-
-	edit := admin.PathPrefix("/edit").Subrouter()
-
-	edit.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditVideo))).Methods(http.MethodPost)
-	edit.Handle("/adminUser", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAdminAccount))).Methods(http.MethodPost)
-
-	// Admin Deletes
-
-	delete := admin.PathPrefix("/delete").Subrouter()
-
-	delete.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleDeleteVideo))).Methods(http.MethodPost)
-
-	// Admin Lists
-
-	list := admin.PathPrefix("/list").Subrouter()
-
-	list.Handle("/adminUsers/{limit}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAdminUsers))).Methods(http.MethodGet)
-	list.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
-
-	list.Handle("/openCheckouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListOpenCheckouts))).Methods(http.MethodGet)
-
 	// Public Lists
 	pubList := r.PathPrefix("/list").Subrouter()
 	pubList.HandleFunc("/mobileUsers", routers.HandleListMobileUsers).Methods(http.MethodGet)
+
+	// Admin Handlers
+	admin := r.PathPrefix("/admin").Subrouter()
 
 	// V2.1 Handlers
 	// videos
@@ -94,6 +65,7 @@ func main() {
 	// checkouts
 	admin.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
 
+	// Upload Handler
 	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)
 
 	// Launch API Listener
