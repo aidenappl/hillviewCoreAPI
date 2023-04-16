@@ -46,23 +46,16 @@ func UpdateLink(db db.Queryable, req UpdateLinkRequest) (*structs.Link, error) {
 		q = q.Set("active", *req.Changes.Active)
 	}
 
-	// execute query
-	_, err := q.RunWith(db).Exec()
+	// form query
+	query, args, err := q.ToSql()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error forming query: %v", err)
 	}
 
-	// add fields
-	if req.Changes.Route != nil {
-		q = q.Set("route", *req.Changes.Route)
-	}
-
-	if req.Changes.Destination != nil {
-		q = q.Set("destination", *req.Changes.Destination)
-	}
-
-	if req.Changes.Active != nil {
-		q = q.Set("active", *req.Changes.Active)
+	// execute query
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("error updating link: %v", err)
 	}
 
 	// get updated playlist

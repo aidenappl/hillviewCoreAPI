@@ -56,8 +56,14 @@ func UpdatePlaylist(db db.Queryable, req UpdatePlaylistRequest) (*structs.Playli
 		q = q.Set("route", *req.Changes.Route)
 	}
 
+	// form query
+	query, args, err := q.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to form query: %v", err)
+	}
+
 	// execute query
-	_, err := q.RunWith(db).Exec()
+	_, err = db.Exec(query, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -51,6 +51,7 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		From("links").
 		OrderBy("links.id DESC").
 		Join("users ON links.created_by = users.id").
+		Where(sq.Eq{"links.active": true}).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
