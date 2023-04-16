@@ -14,11 +14,11 @@ type UpdatePlaylistRequest struct {
 }
 
 type UpdatePlaylistChanges struct {
-	Name        *string
-	Status      *int
-	Description *string
-	BannerImage *string
-	Route       *string
+	Name        *string `json:"name"`
+	Status      *int    `json:"status"`
+	Description *string `json:"description"`
+	BannerImage *string `json:"banner_image"`
+	Route       *string `json:"route"`
 }
 
 func UpdatePlaylist(db db.Queryable, req UpdatePlaylistRequest) (*structs.Playlist, error) {
