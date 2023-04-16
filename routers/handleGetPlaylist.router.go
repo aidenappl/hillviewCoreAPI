@@ -46,7 +46,7 @@ func HandleGetPlaylist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// execute the query
-	playlist, err := query.GetPlaylist(db.AssetDB, query.GetPlaylistRequest{
+	playlist, err := query.GetPlaylist(db.DB, query.GetPlaylistRequest{
 		ID:         req.ID,
 		Identifier: req.Identifier,
 	})
