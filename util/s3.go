@@ -62,6 +62,8 @@ func ValidS3Route(route string) bool {
 	switch route {
 	case "images/assets/":
 		return true
+	case "thumbnails/":
+		return true
 	default:
 		return false
 	}
