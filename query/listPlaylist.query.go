@@ -102,6 +102,17 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
 
+		// Get the videos for the playlist
+		videos, err := ListVideos(db, ListVideosRequest{
+			Limit:      &[]int{100}[0],
+			Offset:     &[]int{0}[0],
+			PlaylistID: &playlist.ID,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error getting videos for playlist: %w", err)
+		}
+		playlist.Videos = videos
+
 		playlist.Status = status
 
 		playlists = append(playlists, &playlist)
