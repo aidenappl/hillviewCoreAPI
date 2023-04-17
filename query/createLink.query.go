@@ -11,6 +11,7 @@ import (
 type CreateLinkRequest struct {
 	Route       *string `json:"route"`
 	Destination *string `json:"destination"`
+	CreatedBy   int     `json:"created_by"`
 }
 
 func CreateLink(db db.Queryable, req CreateLinkRequest) (*structs.Link, error) {
@@ -21,8 +22,8 @@ func CreateLink(db db.Queryable, req CreateLinkRequest) (*structs.Link, error) {
 
 	// create the link
 	query, args, err := sq.Insert("links").
-		Columns("route", "destination").
-		Values(*req.Route, *req.Destination).
+		Columns("route", "destination", "created_by").
+		Values(*req.Route, *req.Destination, req.CreatedBy).
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build sql request: %v", err)

@@ -18,6 +18,12 @@ type contextKey struct {
 	name string
 }
 
+type userContextKey string
+
+var (
+	UserContextType userContextKey = "user"
+)
+
 var JWTClaimsCtxKey = &contextKey{"jwt_claims"}
 
 var UserModelCtxKey = &contextKey{"user_model"}
@@ -32,7 +38,7 @@ func WithClaimsValue(ctx context.Context) *jwt.HVJwtClaims {
 }
 
 func WithUserModelValue(ctx context.Context) *structs.User {
-	val, ok := ctx.Value(UserModelCtxKey).(*structs.User)
+	val, ok := ctx.Value(UserContextType).(*structs.User)
 	if !ok {
 		return nil
 	}
@@ -167,17 +173,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		}
 
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, "user", structs.User{
-			ID:                       user.ID,
-			Username:                 user.Username,
-			Email:                    user.Email,
-			Name:                     user.Name,
-			InsertedAt:               user.InsertedAt,
-			LastActive:               user.LastActive,
-			ProfileImageURL:          user.ProfileImageURL,
-			Authentication:           user.Authentication,
-			AuthenticationStrategies: user.AuthenticationStrategies,
-		})
+		ctx = context.WithValue(ctx, UserContextType, user)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)

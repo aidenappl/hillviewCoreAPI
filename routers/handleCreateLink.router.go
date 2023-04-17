@@ -6,6 +6,7 @@ import (
 
 	"github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/errors"
+	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -22,6 +23,10 @@ func HandleCreateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate the request
+
+	// add user id
+	user := middleware.WithUserModelValue(r.Context())
+	req.CreateLinkRequest.CreatedBy = user.ID
 
 	// create the link
 	link, err := query.CreateLink(db.DB, req.CreateLinkRequest)
