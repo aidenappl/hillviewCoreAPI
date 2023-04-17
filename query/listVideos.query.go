@@ -61,6 +61,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		"video_statuses.short_name",
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
+		Where(sq.NotEq{"videos.status": 4}).
 		OrderBy("videos.id " + *req.Sort).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
