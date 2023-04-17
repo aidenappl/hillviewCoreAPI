@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/hillview.tv/coreAPI/db"
+	cdb "github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
@@ -16,7 +16,7 @@ type CreatePlaylistRequest struct {
 	Videos      *[]int  `json:"videos"`
 }
 
-func CreatePlaylist(db db.Queryable, req CreatePlaylistRequest) (*structs.Playlist, error) {
+func CreatePlaylist(db cdb.Queryable, req CreatePlaylistRequest) (*structs.Playlist, error) {
 	// validate fields
 	if req.Name == nil || *req.Name == "" {
 		return nil, fmt.Errorf("name is required")
@@ -79,7 +79,7 @@ func CreatePlaylist(db db.Queryable, req CreatePlaylistRequest) (*structs.Playli
 		}
 
 		if video == nil {
-			return nil, fmt.Errorf("video not found: ", videoID)
+			return nil, fmt.Errorf(fmt.Sprintf("video with id %d does not exist", videoID))
 		}
 
 		query, args, err := sq.Insert("playlist_associations").
