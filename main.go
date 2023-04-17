@@ -50,6 +50,7 @@ func main() {
 	// assets
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPut)
+	admin.Handle("/asset", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleCreateAsset))).Methods(http.MethodPost)
 	admin.Handle("/assets", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListAsset))).Methods(http.MethodGet)
 
 	// playlists
