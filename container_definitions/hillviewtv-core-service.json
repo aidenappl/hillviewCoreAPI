@@ -5,7 +5,7 @@
       "name": "hillviewtv-core-service",
       "image": "605737100658.dkr.ecr.us-west-1.amazonaws.com/hillviewtv-core-service:b66978a",
       "cpu": 0,
-      "memory": 256,
+      "memory": 128,
       "portMappings": [
         {
           "containerPort": 8000,
