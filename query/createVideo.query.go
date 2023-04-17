@@ -35,10 +35,6 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 		return nil, fmt.Errorf("url is required")
 	}
 
-	if req.Status == nil {
-		return nil, fmt.Errorf("status is required")
-	}
-
 	// create the video
 	query, args, err := sq.Insert("videos").
 		Columns(

@@ -42,11 +42,6 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Status == nil {
-		errors.ParamError(w, "status")
-		return
-	}
-
 	// create the video
 	video, err := query.CreateVideo(db.DB, req.CreateVideoRequest)
 	if err != nil {
