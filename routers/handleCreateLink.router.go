@@ -1,0 +1,35 @@
+package routers
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/hillview.tv/coreAPI/db"
+	"github.com/hillview.tv/coreAPI/errors"
+	"github.com/hillview.tv/coreAPI/query"
+	"github.com/hillview.tv/coreAPI/responder"
+)
+
+type HandleCreateLinkRequest struct {
+	query.CreateLinkRequest
+}
+
+func HandleCreateLink(w http.ResponseWriter, r *http.Request) {
+	var req HandleCreateLinkRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.SendError(w, "failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	// validate the request
+
+	// create the link
+	link, err := query.CreateLink(db.DB, req.CreateLinkRequest)
+	if err != nil {
+		errors.SendError(w, "failed to create link: "+err.Error(), http.StatusConflict)
+		return
+	}
+
+	// send the response
+	json.NewEncoder(w).Encode(responder.New(link))
+}
