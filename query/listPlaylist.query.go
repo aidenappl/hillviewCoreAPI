@@ -51,6 +51,7 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 		From("playlists").
 		Join("playlist_statuses ON playlists.status = playlist_statuses.id").
 		OrderBy("playlists.id DESC").
+		Where(sq.NotEq{"playlists.status": 2}).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
