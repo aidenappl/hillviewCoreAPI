@@ -9,13 +9,12 @@ import (
 )
 
 type CreateVideoRequest struct {
-	Title          *string `json:"title"`
-	Description    *string `json:"description"`
-	Thumbnail      *string `json:"thumbnail"`
-	URL            *string `json:"url"`
-	DownloadURL    *string `json:"download_url"`
-	AllowDownloads *bool   `json:"allow_downloads"`
-	Status         *int    `json:"status"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Thumbnail   *string `json:"thumbnail"`
+	URL         *string `json:"url"`
+	DownloadURL *string `json:"download_url"`
+	Status      *int    `json:"status"`
 }
 
 func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error) {
@@ -34,14 +33,6 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 
 	if req.URL == nil || *req.URL == "" {
 		return nil, fmt.Errorf("url is required")
-	}
-
-	if req.DownloadURL == nil || *req.DownloadURL == "" {
-		return nil, fmt.Errorf("download_url is required")
-	}
-
-	if req.AllowDownloads == nil {
-		return nil, fmt.Errorf("allow_downloads is required")
 	}
 
 	if req.Status == nil {
@@ -63,8 +54,8 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			*req.Description,
 			*req.Thumbnail,
 			*req.URL,
-			*req.DownloadURL,
-			*req.AllowDownloads,
+			req.DownloadURL,
+			(req.DownloadURL != nil && *req.DownloadURL != ""),
 			*req.Status).
 		ToSql()
 	if err != nil {

@@ -42,16 +42,6 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.DownloadURL == nil || *req.DownloadURL == "" {
-		errors.ParamError(w, "download_url")
-		return
-	}
-
-	if req.AllowDownloads == nil {
-		errors.ParamError(w, "allow_downloads")
-		return
-	}
-
 	if req.Status == nil {
 		errors.ParamError(w, "status")
 		return
