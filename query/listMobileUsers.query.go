@@ -53,7 +53,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 		"user_statuses.name",
 		"user_statuses.short_name",
 	).From("users").
-		Join("user_statuses ON user_statuses.id = users.user_status_id").
+		Join("user_statuses ON user_statuses.id = users.status").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset)).
 		OrderBy("users.inserted_at " + *req.Sort)

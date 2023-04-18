@@ -37,7 +37,7 @@ func HandleGetMobileUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// run the query
-	mobileUser, err := query.GetMobileUser(db.DB, query.GetMobileUserRequest{
+	mobileUser, err := query.GetMobileUser(db.AssetDB, query.GetMobileUserRequest{
 		ID:         req.ID,
 		Identifier: req.Identifier,
 	})
