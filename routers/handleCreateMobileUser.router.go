@@ -8,6 +8,7 @@ import (
 	"github.com/hillview.tv/coreAPI/errors"
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
+	"github.com/hillview.tv/coreAPI/util"
 )
 
 func HandleCreateMobileUser(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +19,27 @@ func HandleCreateMobileUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Validate the request
+	// Validate the request
+	if req.Name == nil {
+		errors.ParamError(w, "name")
+		return
+	}
+
+	if req.Email == nil {
+		errors.ParamError(w, "email")
+		return
+	} else {
+		// validate email
+		if !util.IsValidEmail(*req.Email) {
+			errors.SendError(w, "invalid email", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if req.Identifier == nil {
+		errors.ParamError(w, "identifier")
+		return
+	}
 
 	// run the query
 	user, err := query.CreateMobileUser(db.AssetDB, req)
