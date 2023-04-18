@@ -56,6 +56,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 		Join("user_statuses ON user_statuses.id = users.status").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset)).
+		Where(sq.NotEq{"users.status": 3}).
 		OrderBy("users.inserted_at " + *req.Sort)
 
 	// add search
