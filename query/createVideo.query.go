@@ -36,7 +36,8 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 	}
 
 	if req.Status == nil {
-		return nil, fmt.Errorf("status is required")
+		req.Status = new(int)
+		*req.Status = 2
 	}
 
 	// create the video
