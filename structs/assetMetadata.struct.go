@@ -11,9 +11,3 @@ type AssetMetadata struct {
 	Model        *string `json:"model"`
 	Notes        *string `json:"notes"`
 }
-
-type GeneralNSN struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	ShortName string `json:"short_name"`
-}

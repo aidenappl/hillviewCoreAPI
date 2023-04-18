@@ -106,7 +106,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 
 	if req.ID != nil {
 		user := structs.MobileUser{}
-		userStatus := structs.GeneralNSM{}
+		userStatus := structs.GeneralNSN{}
 		err := db.QueryRow(query, args...).Scan(
 			&user.ID,
 			&user.Name,
@@ -137,7 +137,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 		for rows.Next() {
 
 			user := structs.MobileUser{}
-			userStatus := structs.GeneralNSM{}
+			userStatus := structs.GeneralNSN{}
 			err := rows.Scan(
 				&user.ID,
 				&user.Name,

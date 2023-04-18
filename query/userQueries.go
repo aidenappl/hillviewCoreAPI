@@ -149,7 +149,7 @@ func FindUser(db db.Queryable, req FindUserRequest) (*structs.User, error) {
 	}
 
 	user := structs.User{}
-	status := structs.GeneralNST{}
+	status := structs.GeneralNSN{}
 	authentication := structs.UserAuthenticationStrategies{}
 	err = rows.Scan(
 		&user.ID,
@@ -219,7 +219,7 @@ func ListAdminUsers(db db.Queryable, req ListAdminUsersRequest) ([]*structs.User
 	for rows.Next() {
 
 		user := structs.User{}
-		status := structs.GeneralNST{}
+		status := structs.GeneralNSN{}
 		err = rows.Scan(
 			&user.ID,
 			&user.Name,

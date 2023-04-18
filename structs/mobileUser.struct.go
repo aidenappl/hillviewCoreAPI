@@ -5,7 +5,7 @@ type MobileUser struct {
 	Name            string     `json:"name"`
 	Email           string     `json:"email"`
 	Identifier      string     `json:"identifier"`
-	Status          GeneralNSM `json:"status"`
+	Status          GeneralNSN `json:"status"`
 	ProfileImageURL string     `json:"profile_image_url"`
 	InsertedAt      string     `json:"inserted_at"`
 }

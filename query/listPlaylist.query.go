@@ -86,7 +86,7 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 	var playlists []*structs.Playlist
 	for rows.Next() {
 		var playlist structs.Playlist
-		var status structs.GeneralNSM
+		var status structs.GeneralNSN
 		err := rows.Scan(
 			&playlist.ID,
 			&playlist.Name,
