@@ -36,7 +36,7 @@ func main() {
 
 	// Public Lists
 	pubList := r.PathPrefix("/list").Subrouter()
-	pubList.HandleFunc("/mobileUsers", routers.HandleListMobileUsers).Methods(http.MethodGet)
+	pubList.HandleFunc("/mobileUsers", routers.V1HandleListMobileUsers).Methods(http.MethodGet)
 
 	// Admin Handlers
 	admin := r.PathPrefix("/admin").Subrouter()
@@ -73,6 +73,11 @@ func main() {
 	admin.Handle("/users", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListUsers))).Methods(http.MethodGet)
 	// admin.Handle("/user/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateUser))).Methods(http.MethodPut)
 	admin.Handle("/user/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetUser))).Methods(http.MethodGet)
+
+	// mobile users
+	admin.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
+	admin.Handle("/mobileUser/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetMobileUser))).Methods(http.MethodGet)
+	// admin.Handle("/mobileUser/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateMobileUser))).Methods(http.MethodPut)
 
 	// Upload Handler
 	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)

@@ -36,16 +36,16 @@ func HandleListAdminUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-type HandleListMobileUsersRequest struct {
+type V1HandleListMobileUsersRequest struct {
 	Limit  *uint64 `json:"limit"`
 	Offset *uint64 `json:"offset"`
 	Search *string `json:"search"`
 	Sort   *string `json:"sort"`
 }
 
-func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
+func V1HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 
-	var req HandleListMobileUsersRequest
+	var req V1HandleListMobileUsersRequest
 
 	// Get the Sort param
 	sort := r.URL.Query().Get("sort")
