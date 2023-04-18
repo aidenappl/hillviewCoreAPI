@@ -77,7 +77,7 @@ func main() {
 	// mobile users
 	admin.Handle("/mobileUsers", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListMobileUsers))).Methods(http.MethodGet)
 	admin.Handle("/mobileUser/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetMobileUser))).Methods(http.MethodGet)
-	// admin.Handle("/mobileUser/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateMobileUser))).Methods(http.MethodPut)
+	admin.Handle("/mobileUser/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateMobileUser))).Methods(http.MethodPut)
 
 	// Upload Handler
 	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)
