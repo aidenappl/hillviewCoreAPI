@@ -110,7 +110,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		user.Status = userStatus
+		user.Status = &userStatus
 
 		users = append(users, &user)
 	}

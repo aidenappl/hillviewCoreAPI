@@ -12,6 +12,7 @@ type ListCheckoutsRequest struct {
 	Limit  *int    `json:"limit"`
 	Offset *int    `json:"offset"`
 	Sort   *string `json:"sort"`
+	ID     *int    `json:"id"`
 }
 
 func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checkout, error) {
@@ -35,7 +36,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 	}
 
 	// build query
-	query, args, err := sq.Select(
+	q := sq.Select(
 		"asset_checkouts.id",
 		"asset_checkouts.asset_id",
 		"asset_checkouts.offsite",
@@ -69,9 +70,15 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 		LeftJoin("users ON asset_checkouts.associated_user = users.id").
 		OrderBy("asset_checkouts.id " + *req.Sort).
 		Limit(uint64(*req.Limit)).
-		Offset(uint64(*req.Offset)).
-		ToSql()
+		Offset(uint64(*req.Offset))
 
+	// add where clauses
+	if req.ID != nil {
+		q = q.Where(sq.Eq{"asset_checkouts.id": *req.ID})
+	}
+
+	// build query
+	query, args, err := q.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build sql query: %w", err)
 	}

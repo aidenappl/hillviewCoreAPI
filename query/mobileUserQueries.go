@@ -122,7 +122,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan sql rows: %w", err)
 		}
-		user.Status = userStatus
+		user.Status = &userStatus
 		return &user, nil
 	} else {
 		rows, err := db.Query(query, args...)
@@ -154,7 +154,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 				return nil, fmt.Errorf("failed to scan sql rows: %w", err)
 			}
 
-			user.Status = userStatus
+			user.Status = &userStatus
 
 			users = append(users, &user)
 		}

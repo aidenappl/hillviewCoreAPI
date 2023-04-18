@@ -68,6 +68,7 @@ func main() {
 
 	// checkouts
 	admin.Handle("/checkouts", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListCheckouts))).Methods(http.MethodGet)
+	admin.Handle("/checkout/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateCheckout))).Methods(http.MethodPut)
 
 	// users
 	admin.Handle("/users", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListUsers))).Methods(http.MethodGet)
