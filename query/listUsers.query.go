@@ -62,6 +62,7 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 		From("users").
 		LeftJoin("user_types ON users.authentication = user_types.id").
 		LeftJoin("user_authentication ON users.id = user_authentication.user_id").
+		Where(sq.NotEq{"users.authentication": 9}).
 		OrderBy("users.id " + *req.Sort).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
