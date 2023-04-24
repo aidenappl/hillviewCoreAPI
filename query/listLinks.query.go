@@ -47,6 +47,10 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		"users.name",
 		"users.email",
 		"users.profile_image_url",
+
+		`(
+			SELECT COUNT(*) FROM link_clicks WHERE link_clicks.link_id = links.id
+		) as clicks`,
 	).
 		From("links").
 		OrderBy("links.id DESC").
@@ -97,6 +101,8 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 			&user.Name,
 			&user.Email,
 			&user.ProfileImageURL,
+
+			&link.Clicks,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
