@@ -34,6 +34,10 @@
         {
           "name": "JWT_SIGNING_KEY",
           "valueFrom": "/env/hillviewtv-auth-service/JWT_SIGNING_KEY"
+        },
+        {
+          "name": "SENDGRID_API_KEY",
+          "valueFrom": "/env/hillviewtv-core-service/SENDGRID_API_KEY"
         }
       ]
     }

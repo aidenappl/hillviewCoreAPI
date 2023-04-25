@@ -10,6 +10,7 @@ var (
 	DatabaseDSN      = getEnvOrPanic("DATABASE_DSN")
 	JWTSigningKey    = getEnvOrPanic("JWT_SIGNING_KEY")
 	AssetDatabaseDSN = getEnvOrPanic("ASSET_DATABASE_DSN")
+	SendgridAPIKey   = getEnvOrPanic("SENDGRID_API_KEY")
 )
 
 func getEnv(key string, fallback string) string {

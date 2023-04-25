@@ -16,6 +16,7 @@ type ListUsersRequest struct {
 	Search               *string
 	Sort                 *string
 	ID                   *int
+	Authentication       *int
 	IncludeSensitiveData bool
 }
 
@@ -74,6 +75,11 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 			sq.Like{"users.name": *req.Search},
 			sq.Like{"users.email": *req.Search},
 		})
+	}
+
+	// add authentication
+	if req.Authentication != nil {
+		q = q.Where(sq.Eq{"users.authentication": *req.Authentication})
 	}
 
 	// add id
