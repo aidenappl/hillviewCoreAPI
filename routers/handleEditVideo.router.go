@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/errors"
+	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -33,6 +34,13 @@ type videoChangeFields struct {
 }
 
 func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
+	// get user from context
+	user := middleware.WithUserModelValue(r.Context())
+	if user == nil {
+		errors.SendError(w, "failed to get user from context", http.StatusInternalServerError)
+		return
+	}
+
 	var req HandleEditVideoRequest
 	// get mux variable
 	q := mux.Vars(r)["query"]
@@ -69,6 +77,14 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
 		errors.SendError(w, "no changes to make", http.StatusBadRequest)
 		return
+	}
+
+	// check that user is allowed to edit requested fields
+	if user.Authentication.ShortName == "student" {
+		if req.Changes.Thumbnail != nil || req.Changes.AllowDownloads != nil || req.Changes.DownloadURL != nil || req.Changes.URL != nil || req.Changes.Status != nil {
+			errors.SendError(w, "students are not allowed to edit these fields", http.StatusForbidden)
+			return
+		}
 	}
 
 	// check if the asset exists
