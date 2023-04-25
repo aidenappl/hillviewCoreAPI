@@ -28,6 +28,12 @@ var JWTClaimsCtxKey = &contextKey{"jwt_claims"}
 
 var UserModelCtxKey = &contextKey{"user_model"}
 
+var StudentAllowedRoutes = []string{
+	"/core/v1.1/admin/video",
+	"/core/v1.1/admin/playlist",
+	"/core/v1.1/admin/upload",
+}
+
 func WithClaimsValue(ctx context.Context) *jwt.HVJwtClaims {
 	val, ok := ctx.Value(JWTClaimsCtxKey).(*jwt.HVJwtClaims)
 	if !ok {
@@ -175,6 +181,25 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		ctx := r.Context()
 		ctx = context.WithValue(ctx, UserContextType, user)
 		r = r.WithContext(ctx)
+
+		// check user permissions
+		if user.Authentication.ID == 1 || user.Authentication.ID == 9 {
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		if user.Authentication.ShortName == "student" {
+			// check route
+			for _, route := range StudentAllowedRoutes {
+				if strings.Contains(r.RequestURI, route) {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+
+			http.Error(w, "you do not have permission to access this resource", http.StatusUnauthorized)
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})
