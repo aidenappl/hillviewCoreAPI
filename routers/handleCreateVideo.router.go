@@ -74,10 +74,6 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 		// send email to each admin
 		for _, admin := range adminUsers {
 			log.Println("ℹ️ sending email to admin", admin.Email)
-			if admin.Email == "cingham@mpcsd.org" {
-				log.Println("ℹ️ skipping admin email")
-				continue
-			}
 			_, err = mailer.SendTemplate(mailer.SendTemplateRequest{
 				ToEmail: admin.Email,
 				ToName:  admin.Email,
