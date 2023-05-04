@@ -56,7 +56,7 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			*req.Thumbnail,
 			*req.URL,
 			req.DownloadURL,
-			(req.DownloadURL != nil && *req.DownloadURL != ""),
+			false,
 			*req.Status).
 		ToSql()
 	if err != nil {
