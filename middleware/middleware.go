@@ -64,6 +64,7 @@ func MuxHeaderMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Authorization, "+
 			"Content-Type, "+
+			"Cookie, "+
 			"Accept-Encoding, "+
 			"Connection, "+
 			"Content-Length")

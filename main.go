@@ -60,7 +60,7 @@ func main() {
 	admin.Handle("/playlist/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetPlaylist))).Methods(http.MethodGet)
 	admin.Handle("/playlist", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleCreatePlaylist))).Methods(http.MethodPost)
 
-	// links
+	// linksutil
 	admin.Handle("/links", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListLinks))).Methods(http.MethodGet)
 	admin.Handle("/link/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateLink))).Methods(http.MethodPut)
 	admin.Handle("/link/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetLink))).Methods(http.MethodGet)
@@ -87,7 +87,7 @@ func main() {
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Origin", "Authorization", "Accept", "X-CSRF-Token"})
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Origin", "Authorization", "Accept", "Cookie", "X-CSRF-Token"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 	log.Fatal(http.ListenAndServe(":"+env.Port, handlers.CORS(originsOk, headersOk, methodsOk)(primary)))
