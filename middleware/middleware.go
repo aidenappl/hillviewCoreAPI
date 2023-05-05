@@ -71,6 +71,7 @@ func MuxHeaderMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Add("Server", "Go")
 		next.ServeHTTP(w, r)
 	})
