@@ -60,7 +60,7 @@ func main() {
 	admin.Handle("/playlist/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetPlaylist))).Methods(http.MethodGet)
 	admin.Handle("/playlist", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleCreatePlaylist))).Methods(http.MethodPost)
 
-	// linksutil
+	// links
 	admin.Handle("/links", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListLinks))).Methods(http.MethodGet)
 	admin.Handle("/link/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateLink))).Methods(http.MethodPut)
 	admin.Handle("/link/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetLink))).Methods(http.MethodGet)
