@@ -81,7 +81,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 
 	// check that user is allowed to edit requested fields
 	if user.Authentication.ShortName == "student" {
-		if req.Changes.Thumbnail != nil || req.Changes.AllowDownloads != nil || req.Changes.DownloadURL != nil || req.Changes.URL != nil || req.Changes.Status != nil {
+		if req.Changes.AllowDownloads != nil || req.Changes.DownloadURL != nil || req.Changes.URL != nil || req.Changes.Status != nil {
 			errors.SendError(w, "students are not allowed to edit these fields", http.StatusForbidden)
 			return
 		}
