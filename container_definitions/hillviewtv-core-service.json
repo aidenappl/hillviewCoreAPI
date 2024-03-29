@@ -38,6 +38,14 @@
         {
           "name": "SENDGRID_API_KEY",
           "valueFrom": "/env/hillviewtv-core-service/SENDGRID_API_KEY"
+        },
+        {
+          "name": "CLOUDFLARE_ACCOUNT_ID",
+          "valueFrom": "/env/hillviewtv-auth-service/CLOUDFLARE_UID"
+        },
+        {
+          "name": "CLOUDFLARE_AUTH_TOKEN",
+          "valueFrom": "/env/hillviewtv-core-service/CLOUDFLARE_KEY"
         }
       ]
     }

@@ -83,6 +83,7 @@ func main() {
 
 	// Upload Handler
 	admin.Handle("/upload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpload))).Methods(http.MethodPost)
+	admin.Handle("/betaUpload", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleBetaUpload))).Methods(http.MethodPost)
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
