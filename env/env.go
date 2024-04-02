@@ -6,13 +6,11 @@ import (
 )
 
 var (
-	Port                = getEnv("PORT", "8000")
-	DatabaseDSN         = getEnvOrPanic("DATABASE_DSN")
-	JWTSigningKey       = getEnvOrPanic("JWT_SIGNING_KEY")
-	AssetDatabaseDSN    = getEnvOrPanic("ASSET_DATABASE_DSN")
-	SendgridAPIKey      = getEnvOrPanic("SENDGRID_API_KEY")
-	CloudflareAccountID = getEnvOrPanic("CLOUDFLARE_ACCOUNT_ID")
-	CloudflareAuthToken = getEnvOrPanic("CLOUDFLARE_AUTH_TOKEN")
+	Port             = getEnv("PORT", "8000")
+	DatabaseDSN      = getEnvOrPanic("DATABASE_DSN")
+	JWTSigningKey    = getEnvOrPanic("JWT_SIGNING_KEY")
+	AssetDatabaseDSN = getEnvOrPanic("ASSET_DATABASE_DSN")
+	SendgridAPIKey   = getEnvOrPanic("SENDGRID_API_KEY")
 )
 
 func getEnv(key string, fallback string) string {
