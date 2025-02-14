@@ -50,8 +50,8 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 	)
 
 	q = q.From("spotlight").
-		Join("videos ON spotlight.video_id = videos.id").
-		Join("video_statuses ON videos.status = video_statuses.id").
+		LeftJoin("videos ON spotlight.video_id = videos.id").
+		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		OrderBy("spotlight.rank ASC").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
@@ -71,8 +71,8 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 	spotlights := []*structs.Spotlight{}
 	for rows.Next() {
 		s := &structs.Spotlight{}
-		v := &structs.Video{}
-		v.Status = &structs.GeneralNSN{}
+		v := &structs.NulledVideo{}
+		v.Status = &structs.GeneralNSNNulled{}
 
 		err := rows.Scan(
 			&s.Rank,
@@ -99,7 +99,26 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
 
-		s.Video = v
+		if v.ID != nil {
+			s.Video = &structs.Video{
+				ID:             *v.ID,
+				UUID:           *v.UUID,
+				Title:          *v.Title,
+				Description:    *v.Description,
+				Thumbnail:      *v.Thumbnail,
+				URL:            *v.URL,
+				DownloadURL:    v.DownloadURL,
+				AllowDownloads: *v.AllowDownloads,
+				InsertedAt:     *v.InsertedAt,
+				Views:          *v.Views,
+				Status: &structs.GeneralNSN{
+					ID:        *v.Status.ID,
+					Name:      *v.Status.Name,
+					ShortName: *v.Status.ShortName,
+				},
+			}
+		}
+
 		spotlights = append(spotlights, s)
 	}
 
