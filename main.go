@@ -48,6 +48,11 @@ func main() {
 	admin.Handle("/videos", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListVideo))).Methods(http.MethodGet)
 	admin.Handle("/video", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleCreateVideo))).Methods(http.MethodPost)
 
+	// spotlight
+	admin.Handle("/spotlight", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListSpotlight))).Methods(http.MethodGet)
+	admin.Handle("/spotlight/{rank}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetSpotlight))).Methods(http.MethodGet)
+	admin.Handle("/spotlight/{rank}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateSpotlight))).Methods(http.MethodPut)
+
 	// assets
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleEditAsset))).Methods(http.MethodPut)
