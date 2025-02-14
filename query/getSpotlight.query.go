@@ -45,8 +45,8 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 	)
 
 	q = q.From("spotlight").
-		Join("videos ON spotlight.video_id = videos.id").
-		Join("video_statuses ON videos.status = video_statuses.id").
+		LeftJoin("videos ON spotlight.video_id = videos.id").
+		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		Where(sq.Eq{"spotlight.rank": *req.Rank})
 
 	query, args, err := q.ToSql()
@@ -56,8 +56,8 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 
 	row := db.QueryRow(query, args...)
 	s := &structs.Spotlight{}
-	v := &structs.Video{}
-	v.Status = &structs.GeneralNSN{}
+	v := &structs.NulledVideo{}
+	v.Status = &structs.GeneralNSNNulled{}
 
 	err = row.Scan(
 		&s.Rank,
@@ -84,7 +84,25 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 		return nil, fmt.Errorf("failed to scan row: %v", err)
 	}
 
-	s.Video = v
+	if v.ID != nil {
+		s.Video = &structs.Video{
+			ID:             *v.ID,
+			UUID:           *v.UUID,
+			Title:          *v.Title,
+			Description:    *v.Description,
+			Thumbnail:      *v.Thumbnail,
+			URL:            *v.URL,
+			DownloadURL:    v.DownloadURL,
+			AllowDownloads: *v.AllowDownloads,
+			InsertedAt:     *v.InsertedAt,
+			Views:          *v.Views,
+			Status: &structs.GeneralNSN{
+				ID:        *v.Status.ID,
+				Name:      *v.Status.Name,
+				ShortName: *v.Status.ShortName,
+			},
+		}
+	}
 
 	return s, nil
 
