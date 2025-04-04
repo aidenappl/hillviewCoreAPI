@@ -70,7 +70,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		Route: route,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to upload image: "+err.Error(), http.StatusConflict)
+		errors.SendError(w, "failed to upload image to s3: "+err.Error(), http.StatusConflict)
 		return
 	}
 
