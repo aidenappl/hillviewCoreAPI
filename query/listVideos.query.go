@@ -63,6 +63,10 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		`(
 			SELECT COUNT(video_views.id) FROM video_views WHERE video_views.video_id = videos.id
 		) as views`,
+
+		`(
+			SELECT COUNT(video_downloads.id) FROM video_downloads WHERE video_downloads.video_id = videos.id
+		) as downloads`,
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
 		Where(sq.NotEq{"videos.status": 4}).
@@ -159,6 +163,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 			&status.ShortName,
 
 			&video.Views,
+			&video.Downloads,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)

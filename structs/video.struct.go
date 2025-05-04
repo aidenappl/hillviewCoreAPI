@@ -14,20 +14,22 @@ type Video struct {
 	DownloadURL    *string     `json:"download_url"`
 	AllowDownloads bool        `json:"allow_downloads"`
 	Views          int         `json:"views"`
+	Downloads      int         `json:"downloads"`
 	Status         *GeneralNSN `json:"status"`
 	InsertedAt     string      `json:"inserted_at"`
 }
 
 type NulledVideo struct {
-	ID             *int        `json:"id"`
-	UUID           *string     `json:"uuid"`
-	Title          *string     `json:"title"`
-	Description    *string     `json:"description"`
-	Thumbnail      *string     `json:"thumbnail"`
-	URL            *string     `json:"url"`
-	DownloadURL    *string     `json:"download_url"`
-	AllowDownloads *bool       `json:"allow_downloads"`
-	Views          *int        `json:"views"`
+	ID             *int              `json:"id"`
+	UUID           *string           `json:"uuid"`
+	Title          *string           `json:"title"`
+	Description    *string           `json:"description"`
+	Thumbnail      *string           `json:"thumbnail"`
+	URL            *string           `json:"url"`
+	DownloadURL    *string           `json:"download_url"`
+	AllowDownloads *bool             `json:"allow_downloads"`
+	Views          *int              `json:"views"`
+	Downloads      *int              `json:"downloads"`
 	Status         *GeneralNSNNulled `json:"status"`
-	InsertedAt     *string     `json:"inserted_at"`
+	InsertedAt     *string           `json:"inserted_at"`
 }
