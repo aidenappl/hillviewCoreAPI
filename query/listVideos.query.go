@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	"strings"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/hillview.tv/coreAPI/db"
@@ -167,6 +168,15 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		if strings.Contains(video.URL, "cloudflare") {
+			parts := strings.Split(video.URL, "/")
+			if len(parts) > 0 {
+				video.CloudflareID = &parts[len(parts)-3]
+			} else {
+				video.CloudflareID = nil
+			}
 		}
 
 		video.Status = &status
