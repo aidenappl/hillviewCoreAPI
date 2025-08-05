@@ -20,8 +20,6 @@ var (
 	awsConfig = func() aws.Config {
 		cfg, err := config.LoadDefaultConfig(
 			context.TODO(),
-			config.WithSharedConfigProfile("personal"),
-			config.WithRegion("us-west-1"),
 		)
 		if err != nil {
 			panic(fmt.Errorf("unable to load aws credentials: %w", err))
