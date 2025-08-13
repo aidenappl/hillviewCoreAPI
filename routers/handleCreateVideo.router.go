@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/mailer"
 	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/query"
@@ -21,41 +21,41 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 	// get the user from context
 	user := middleware.WithUserModelValue(r.Context())
 	if user == nil {
-		errors.SendError(w, "failed to get user from context", http.StatusInternalServerError)
+		responder.SendError(w, "failed to get user from context", http.StatusInternalServerError)
 		return
 	}
 
 	var req HandleCreateVideoRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		errors.SendError(w, "failed to decode request body", http.StatusBadRequest)
+		responder.SendError(w, "failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
 	// validate the request
 	if req.Title == nil || *req.Title == "" {
-		errors.ParamError(w, "title")
+		responder.ParamError(w, "title")
 		return
 	}
 
 	if req.Description == nil || *req.Description == "" {
-		errors.ParamError(w, "description")
+		responder.ParamError(w, "description")
 		return
 	}
 
 	if req.Thumbnail == nil || *req.Thumbnail == "" {
-		errors.ParamError(w, "thumbnail")
+		responder.ParamError(w, "thumbnail")
 		return
 	}
 
 	if req.URL == nil || *req.URL == "" {
-		errors.ParamError(w, "url")
+		responder.ParamError(w, "url")
 		return
 	}
 
 	// create the video
 	video, err := query.CreateVideo(db.DB, req.CreateVideoRequest)
 	if err != nil {
-		errors.SendError(w, "failed to create video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to create video: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -96,6 +96,6 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(video))
+	responder.New(w, video)
 
 }

@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -17,12 +16,12 @@ func HandleGetSpotlight(w http.ResponseWriter, r *http.Request) {
 	// get the query var
 	rankVar := mux.Vars(r)["rank"]
 	if rankVar == "" {
-		json.NewEncoder(w).Encode(responder.Error("missing rank"))
+		responder.ParamError(w, "missing rank")
 		return
 	} else {
 		rank, err := strconv.Atoi(rankVar)
 		if err != nil {
-			json.NewEncoder(w).Encode(responder.Error("invalid rank"))
+			responder.ParamError(w, "invalid rank")
 			return
 		}
 		q.Rank = &rank
@@ -30,9 +29,9 @@ func HandleGetSpotlight(w http.ResponseWriter, r *http.Request) {
 
 	spotlight, err := query.GetSpotlight(db.DB, q)
 	if err != nil {
-		json.NewEncoder(w).Encode(responder.Error(err.Error()))
+		responder.ParamError(w, err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(responder.New(spotlight))
+	responder.New(w, spotlight)
 }

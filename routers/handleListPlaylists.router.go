@@ -1,12 +1,11 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -31,24 +30,24 @@ func HandleListPlaylists(w http.ResponseWriter, r *http.Request) {
 	if limit != "" {
 		intLimit, err := strconv.Atoi(limit)
 		if err != nil {
-			errors.ParamError(w, "limit")
+			responder.ParamError(w, "limit")
 			return
 		}
 		req.Limit = &intLimit
 	} else {
-		errors.ParamError(w, "limit")
+		responder.ParamError(w, "limit")
 		return
 	}
 
 	if offset != "" {
 		intOffset, err := strconv.Atoi(offset)
 		if err != nil {
-			errors.ParamError(w, "offset")
+			responder.ParamError(w, "offset")
 			return
 		}
 		req.Offset = &intOffset
 	} else {
-		errors.ParamError(w, "offset")
+		responder.ParamError(w, "offset")
 		return
 	}
 
@@ -68,10 +67,10 @@ func HandleListPlaylists(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to list playlists: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list playlists: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// send response
-	json.NewEncoder(w).Encode(responder.New(playlists))
+	responder.New(w, playlists)
 }

@@ -18,12 +18,12 @@ func HandleUpdateSpotlight(w http.ResponseWriter, r *http.Request) {
 	// get rank from url
 	rankVar := mux.Vars(r)["rank"]
 	if rankVar == "" {
-		json.NewEncoder(w).Encode(responder.Error("missing rank"))
+		responder.ParamError(w, "rank")
 		return
 	} else {
 		rank, err := strconv.Atoi(rankVar)
 		if err != nil {
-			json.NewEncoder(w).Encode(responder.Error("invalid rank"))
+			responder.SendError(w, "invalid rank", http.StatusBadRequest)
 			return
 		}
 		req.Rank = &rank
@@ -31,16 +31,16 @@ func HandleUpdateSpotlight(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		json.NewEncoder(w).Encode(responder.Error(err.Error()))
+		responder.BadBody(w, err)
 		return
 	}
 
 	//  update spotlight
 	spotlight, err := query.UpdateSpotlight(db.DB, req)
 	if err != nil {
-		json.NewEncoder(w).Encode(responder.Error(err.Error()))
+		responder.SendError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(responder.New(spotlight))
+	responder.New(w, spotlight)
 }

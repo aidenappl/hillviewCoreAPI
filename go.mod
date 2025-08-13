@@ -1,6 +1,6 @@
 module github.com/hillview.tv/coreAPI
 
-go 1.17
+go 1.23
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.17.8

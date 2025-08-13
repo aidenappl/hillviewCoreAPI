@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 	"github.com/hillview.tv/coreAPI/structs"
@@ -50,25 +50,25 @@ func HandleEditAsset(w http.ResponseWriter, r *http.Request) {
 
 	// check that there is an identifier
 	if req.ID == nil && req.Identifier == nil {
-		errors.ErrRequiredKey(w, "id or identifier")
+		responder.ErrRequiredKey(w, "id or identifier")
 		return
 	}
 
 	// parse the body
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		errors.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// check edit fields
 	if req.Changes == nil {
-		errors.ErrRequiredKey(w, "changes")
+		responder.ErrRequiredKey(w, "changes")
 		return
 	}
 
 	if req.Changes.Name == nil && req.Changes.ImageURL == nil && req.Changes.Identifier == nil && req.Changes.Description == nil && req.Changes.Category == nil && req.Changes.Status == nil && req.Changes.Metadata == nil {
-		errors.SendError(w, "no changes were provided", http.StatusBadRequest)
+		responder.SendError(w, "no changes were provided", http.StatusBadRequest)
 		return
 	}
 
@@ -78,12 +78,12 @@ func HandleEditAsset(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to get asset: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to get asset: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if asset == nil {
-		errors.SendError(w, "asset not found", http.StatusNotFound)
+		responder.SendError(w, "asset not found", http.StatusNotFound)
 		return
 	}
 
@@ -102,11 +102,11 @@ func HandleEditAsset(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		errors.SendError(w, "failed to update asset: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update asset: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// return asset
-	json.NewEncoder(w).Encode(responder.New(asset))
+	responder.New(w, asset)
 
 }

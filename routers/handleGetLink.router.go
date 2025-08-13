@@ -1,13 +1,12 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -37,7 +36,7 @@ func HandleGetLink(w http.ResponseWriter, r *http.Request) {
 
 	// check if the user provided an id or an identifier
 	if req.ID == nil && req.Identifier == nil {
-		errors.ErrRequiredKey(w, "id or identifier")
+		responder.ErrRequiredKey(w, "id or identifier")
 		return
 	}
 
@@ -47,11 +46,11 @@ func HandleGetLink(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to get videos: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to get videos: "+err.Error(), http.StatusConflict)
 		return
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(link))
+	responder.New(w, link)
 
 }

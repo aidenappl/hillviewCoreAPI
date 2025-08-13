@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
@@ -37,7 +37,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 	// get user from context
 	user := middleware.WithUserModelValue(r.Context())
 	if user == nil {
-		errors.SendError(w, "failed to get user from context", http.StatusInternalServerError)
+		responder.SendError(w, "failed to get user from context", http.StatusInternalServerError)
 		return
 	}
 
@@ -57,32 +57,32 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 
 	// check that there is an identifier
 	if req.ID == nil && req.Identifier == nil {
-		errors.ErrRequiredKey(w, "id or identifier")
+		responder.ErrRequiredKey(w, "id or identifier")
 		return
 	}
 
 	// parse the body
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		errors.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// check edit fields
 	if req.Changes == nil {
-		errors.ErrRequiredKey(w, "changes")
+		responder.ErrRequiredKey(w, "changes")
 		return
 	}
 
 	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
-		errors.SendError(w, "no changes to make", http.StatusBadRequest)
+		responder.SendError(w, "no changes to make", http.StatusBadRequest)
 		return
 	}
 
 	// check that user is allowed to edit requested fields
 	if user.Authentication.ShortName == "student" {
 		if req.Changes.AllowDownloads != nil || req.Changes.DownloadURL != nil || req.Changes.URL != nil || req.Changes.Status != nil {
-			errors.SendError(w, "students are not allowed to edit these fields", http.StatusForbidden)
+			responder.SendError(w, "students are not allowed to edit these fields", http.StatusForbidden)
 			return
 		}
 	}
@@ -93,12 +93,12 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to get video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to get video: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if video == nil {
-		errors.SendError(w, "video not found", http.StatusNotFound)
+		responder.SendError(w, "video not found", http.StatusNotFound)
 		return
 	}
 
@@ -117,10 +117,10 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		errors.SendError(w, "failed to update video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update video: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// return asset
-	json.NewEncoder(w).Encode(responder.New(video))
+	responder.New(w, video)
 }

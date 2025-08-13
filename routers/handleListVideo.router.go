@@ -1,12 +1,11 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -31,24 +30,24 @@ func HandleListVideo(w http.ResponseWriter, r *http.Request) {
 	if limit != "" {
 		intLimit, err := strconv.Atoi(limit)
 		if err != nil {
-			errors.SendError(w, "invalid limit provided", http.StatusBadRequest)
+			responder.SendError(w, "invalid limit provided", http.StatusBadRequest)
 			return
 		}
 		req.Limit = intLimit
 	} else {
-		errors.ErrRequiredKey(w, "limit")
+		responder.ErrRequiredKey(w, "limit")
 		return
 	}
 
 	if offset != "" {
 		intOffset, err := strconv.Atoi(offset)
 		if err != nil {
-			errors.SendError(w, "invalid offset provided", http.StatusBadRequest)
+			responder.SendError(w, "invalid offset provided", http.StatusBadRequest)
 			return
 		}
 		req.Offset = intOffset
 	} else {
-		errors.ErrRequiredKey(w, "offset")
+		responder.ErrRequiredKey(w, "offset")
 		return
 	}
 
@@ -68,10 +67,10 @@ func HandleListVideo(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to list videos: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list videos: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(videos))
+	responder.New(w, videos)
 }

@@ -1,12 +1,11 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -29,12 +28,12 @@ func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 
 	// set the query params
 	if limit == "" {
-		errors.ParamError(w, "limit")
+		responder.ParamError(w, "limit")
 		return
 	} else {
 		limitID, err := strconv.Atoi(limit)
 		if err != nil {
-			errors.SendError(w, "limit must be an integer", http.StatusBadRequest)
+			responder.SendError(w, "limit must be an integer", http.StatusBadRequest)
 			return
 		}
 
@@ -42,12 +41,12 @@ func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if offset == "" {
-		errors.ParamError(w, "offset")
+		responder.ParamError(w, "offset")
 		return
 	} else {
 		offsetID, err := strconv.Atoi(offset)
 		if err != nil {
-			errors.SendError(w, "offset must be an integer", http.StatusBadRequest)
+			responder.SendError(w, "offset must be an integer", http.StatusBadRequest)
 			return
 		}
 
@@ -70,10 +69,10 @@ func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to list mobile users: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list mobile users: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(mobileUsers))
+	responder.New(w, mobileUsers)
 }

@@ -1,13 +1,12 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -25,7 +24,7 @@ func HandleGetMobileUser(w http.ResponseWriter, r *http.Request) {
 
 	// set the query params
 	if q == "" {
-		errors.ParamError(w, "query")
+		responder.ParamError(w, "query")
 		return
 	} else {
 		idInt, err := strconv.Atoi(q)
@@ -42,15 +41,15 @@ func HandleGetMobileUser(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to get mobile user: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to get mobile user: "+err.Error(), http.StatusConflict)
 		return
 	}
 
 	if mobileUser == nil {
-		errors.SendError(w, "mobile user not found", http.StatusNotFound)
+		responder.SendError(w, "mobile user not found", http.StatusNotFound)
 		return
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(mobileUser))
+	responder.New(w, mobileUser)
 }

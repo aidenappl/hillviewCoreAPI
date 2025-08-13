@@ -1,13 +1,12 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
-	"github.com/hillview.tv/coreAPI/errors"
+
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
 )
@@ -24,12 +23,12 @@ func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 
 	// parse the query
 	if q == "" {
-		errors.ParamError(w, "query")
+		responder.ParamError(w, "query")
 		return
 	} else {
 		queryID, err := strconv.Atoi(q)
 		if err != nil {
-			errors.SendError(w, "query must be an integer", http.StatusBadRequest)
+			responder.SendError(w, "query must be an integer", http.StatusBadRequest)
 			return
 		}
 
@@ -41,15 +40,15 @@ func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		ID: req.ID,
 	})
 	if err != nil {
-		errors.SendError(w, "failed to get user: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to get user: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if user == nil {
-		errors.SendError(w, "user not found", http.StatusNotFound)
+		responder.SendError(w, "user not found", http.StatusNotFound)
 		return
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(responder.New(user))
+	responder.New(w, user)
 }
