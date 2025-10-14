@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/hillview.tv/coreAPI/background"
 	"github.com/hillview.tv/coreAPI/env"
 	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/routers"
@@ -21,8 +23,11 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	}).Methods(http.MethodGet)
 
-	// Define the API Endpoints
+	// Add context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
+	// Define the API Endpoints
 	r := primary.PathPrefix("/core/v1.1").Subrouter()
 
 	// Logging of requests
@@ -91,6 +96,9 @@ func main() {
 
 	// Launch API Listener
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
+
+	// Add the health check polling
+	go background.StartHealthCheckPolling(ctx)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Origin", "Authorization", "Accept", "Cookie", "X-CSRF-Token"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
