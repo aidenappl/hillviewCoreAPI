@@ -30,6 +30,9 @@ func main() {
 	// Define the API Endpoints
 	r := primary.PathPrefix("/core/v1.1").Subrouter()
 
+	// Request ID Middleware
+	primary.Use(middleware.RequestIDMiddleware)
+
 	// Logging of requests
 	r.Use(middleware.LoggingMiddleware)
 

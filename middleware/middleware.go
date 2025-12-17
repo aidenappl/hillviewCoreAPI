@@ -4,13 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/jwt"
 	"github.com/hillview.tv/coreAPI/query"
+	"github.com/hillview.tv/coreAPI/responder"
 	"github.com/hillview.tv/coreAPI/structs"
 )
 
@@ -25,6 +29,8 @@ var (
 )
 
 var JWTClaimsCtxKey = &contextKey{"jwt_claims"}
+var RequestIDKey = &contextKey{"request_id"}
+var ClientIPKey = &contextKey{"client_ip"}
 
 var UserModelCtxKey = &contextKey{"user_model"}
 
@@ -32,6 +38,67 @@ var StudentAllowedRoutes = []string{
 	"/core/v1.1/admin/video",
 	"/core/v1.1/admin/playlist",
 	"/core/v1.1/admin/upload",
+}
+
+// GetClientIP extracts the real client IP from the request,
+// checking common proxy headers first
+func GetClientIP(r *http.Request) string {
+	// Check X-Forwarded-For header (common for proxies/load balancers)
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		// X-Forwarded-For can contain multiple IPs, take the first one
+		ips := strings.Split(xff, ",")
+		if len(ips) > 0 {
+			ip := strings.TrimSpace(ips[0])
+			if ip != "" {
+				return ip
+			}
+		}
+	}
+
+	// Check X-Real-IP header (used by nginx)
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+
+	// Check CF-Connecting-IP header (Cloudflare)
+	if cfip := r.Header.Get("CF-Connecting-IP"); cfip != "" {
+		return cfip
+	}
+
+	// Fall back to RemoteAddr
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
+}
+
+// GetClientIPFromContext retrieves the client IP from the context
+func GetClientIPFromContext(ctx context.Context) string {
+	if ip, ok := ctx.Value(ClientIPKey).(string); ok {
+		return ip
+	}
+	return "unknown"
+}
+
+// RequestIDMiddleware generates a unique request ID and adds it to the context
+func RequestIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestID := uuid.New().String()
+		clientIP := GetClientIP(r)
+		ctx := context.WithValue(r.Context(), RequestIDKey, requestID)
+		ctx = context.WithValue(ctx, ClientIPKey, clientIP)
+		w.Header().Set("X-Request-ID", requestID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// GetRequestID retrieves the request ID from the context
+func GetRequestID(ctx context.Context) string {
+	if requestID, ok := ctx.Value(RequestIDKey).(string); ok {
+		return requestID
+	}
+	return "unknown"
 }
 
 func WithClaimsValue(ctx context.Context) *jwt.HVJwtClaims {
@@ -52,10 +119,21 @@ func WithUserModelValue(ctx context.Context) *structs.User {
 	return val
 }
 
+func Println(ctx context.Context, msg string) {
+	requestID := GetRequestID(ctx)
+	log.Printf("[%s] %s", requestID, msg)
+}
+
+// LoggingMiddleware logs the request method, URI, and duration with request ID and client IP
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.Method, r.RequestURI)
+		start := time.Now()
+		requestID := GetRequestID(r.Context())
+		clientIP := GetClientIPFromContext(r.Context())
+		log.Printf("[%s] [%s] %s %s", requestID, clientIP, r.Method, r.RequestURI)
 		next.ServeHTTP(w, r)
+		duration := time.Since(start)
+		log.Printf("[%s] [%s] [REQUEST FINISH] %s %s - %v", requestID, clientIP, r.Method, r.RequestURI, duration)
 	})
 }
 
@@ -130,7 +208,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		rawToken = splitToken[1]
 
 		if len(rawToken) < 1 {
-			http.Error(w, "Missing Authorization token", http.StatusUnauthorized)
+			responder.SendError(w, "Missing Authorization token", http.StatusUnauthorized)
 			return
 		}
 
@@ -138,9 +216,9 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		token, err := jwt.ParseJWT(rawToken)
 		if err != nil {
 			if strings.Contains(err.Error(), "token is expired") {
-				http.Error(w, "Token is expired", http.StatusUnauthorized)
+				responder.SendError(w, "token is expired", http.StatusUnauthorized)
 			} else {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
+				responder.SendError(w, "invalid token", http.StatusUnauthorized, err)
 			}
 			return
 		}
@@ -149,19 +227,19 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 
 		claimsValid, resp, err := jwt.ValidJWT(r.Context(), rawToken, claims, &jwt.HVJwtClaims{Type: jwt.AccessToken})
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			responder.SendError(w, err.Error(), http.StatusUnauthorized, err)
 			return
 		}
 
 		if !claimsValid {
 			if resp.Expired {
-				http.Error(w, "Token is expired", http.StatusUnauthorized)
+				responder.SendError(w, "Token is expired", http.StatusUnauthorized)
 			}
 			if resp.Revoked {
-				http.Error(w, "Token is revoked", http.StatusUnauthorized)
+				responder.SendError(w, "Token is revoked", http.StatusUnauthorized)
 			}
 			if resp.InvalidIssuer || resp.Err || resp.Invalid {
-				http.Error(w, "Invalid token, bad issuer, response, or invalid", http.StatusUnauthorized)
+				responder.SendError(w, "Invalid token, bad issuer, response, or invalid", http.StatusUnauthorized)
 			}
 			return
 		}
@@ -169,14 +247,14 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 		userID, err := strconv.Atoi(claims.Subject)
 		if err != nil {
 			log.Println("failed to convert user id to int", err.Error())
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			responder.SendError(w, "Invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		user, err := query.FindUser(db.DB, query.FindUserRequest{ID: &userID})
 		if err != nil {
 			log.Println("failed to find user by id", err.Error())
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			responder.SendError(w, "Invalid token", http.StatusUnauthorized)
 			return
 		}
 
@@ -186,7 +264,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 
 		// check user permissions
 		if user.Authentication.ID == 1 || user.Authentication.ID == 9 {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			responder.SendError(w, "Invalid token", http.StatusUnauthorized)
 			return
 		}
 
@@ -199,7 +277,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 				}
 			}
 
-			http.Error(w, "you do not have permission to access this resource", http.StatusUnauthorized)
+			responder.SendError(w, "you do not have permission to access this resource", http.StatusUnauthorized)
 			return
 		}
 
