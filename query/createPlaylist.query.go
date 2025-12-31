@@ -79,7 +79,7 @@ func CreatePlaylist(db cdb.Queryable, req CreatePlaylistRequest) (*structs.Playl
 		}
 
 		if video == nil {
-			return nil, fmt.Errorf(fmt.Sprintf("video with id %d does not exist", videoID))
+			return nil, fmt.Errorf("video with id %d does not exist", videoID)
 		}
 
 		query, args, err := sq.Insert("playlist_associations").

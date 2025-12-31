@@ -160,5 +160,4 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 		}
 		return users, nil
 	}
-	return nil, nil
 }
