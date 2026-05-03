@@ -96,10 +96,17 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		}
 
 		if req.Search != nil {
-			wherein = append(wherein, sq.Or{
-				sq.Like{"videos.title": "%" + *req.Search + "%"},
-				sq.Like{"videos.description": "%" + *req.Search + "%"},
-			})
+			tokens := strings.Fields(*req.Search)
+			if len(tokens) > 0 {
+				var searchCond sq.And
+				for _, token := range tokens {
+					searchCond = append(searchCond, sq.Or{
+						sq.Like{"videos.title": "%" + token + "%"},
+						sq.Like{"videos.description": "%" + token + "%"},
+					})
+				}
+				wherein = append(wherein, searchCond)
+			}
 		}
 
 		q = q.Where(wherein)
@@ -123,10 +130,12 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		}
 
 		if req.Search != nil {
-			q = q.Where(sq.Or{
-				sq.Like{"videos.title": "%" + *req.Search + "%"},
-				sq.Like{"videos.description": "%" + *req.Search + "%"},
-			})
+			for _, token := range strings.Fields(*req.Search) {
+				q = q.Where(sq.Or{
+					sq.Like{"videos.title": "%" + token + "%"},
+					sq.Like{"videos.description": "%" + token + "%"},
+				})
+			}
 		}
 	}
 
