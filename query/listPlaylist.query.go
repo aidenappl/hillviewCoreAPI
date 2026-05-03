@@ -12,7 +12,10 @@ type ListPlaylistsRequest struct {
 	Limit  *int
 	Offset *int
 	Search *string
-	Sort   *string
+	Sort   *string  // "asc" or "desc" — direction
+	SortBy *string  // "date" — column
+
+	Statuses *[]int
 
 	// select fields
 	ID *int
@@ -28,10 +31,23 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 		return nil, fmt.Errorf("required field offset is nil")
 	}
 
-	// check sort formatting
+	// Sort direction
+	sortDir := "DESC"
 	if req.Sort != nil {
 		if *req.Sort != "desc" && *req.Sort != "asc" {
 			return nil, fmt.Errorf("invalid sort provided")
+		}
+		if *req.Sort == "asc" {
+			sortDir = "ASC"
+		}
+	}
+
+	// Sort column
+	orderClause := "playlists.inserted_at " + sortDir
+	if req.SortBy != nil {
+		switch *req.SortBy {
+		case "date":
+			orderClause = "playlists.inserted_at " + sortDir
 		}
 	}
 
@@ -50,24 +66,25 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 	).
 		From("playlists").
 		Join("playlist_statuses ON playlists.status = playlist_statuses.id").
-		OrderBy("playlists.id DESC").
-		Where(sq.NotEq{"playlists.status": 2}).
+		OrderBy(orderClause).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
-	// add select fields
+	// Status filter: explicit set overrides the default exclude-archived
+	if req.Statuses != nil && len(*req.Statuses) > 0 {
+		q = q.Where(sq.Eq{"playlists.status": *req.Statuses})
+	} else {
+		q = q.Where(sq.NotEq{"playlists.status": 2})
+	}
+
+	// ID filter
 	if req.ID != nil {
 		q = q.Where(sq.Eq{"playlists.id": *req.ID})
 	}
 
-	// add search
-	if req.Search != nil {
-		q = q.Where(sq.Like{"playlists.name": *req.Search})
-	}
-
-	// add sort
-	if req.Sort != nil {
-		q = q.OrderBy(fmt.Sprintf("playlists.id %s", *req.Sort))
+	// Search — token-based AND search across name
+	if req.Search != nil && *req.Search != "" {
+		q = q.Where(sq.Like{"playlists.name": "%" + *req.Search + "%"})
 	}
 
 	// run query

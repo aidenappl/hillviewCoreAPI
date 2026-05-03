@@ -13,7 +13,8 @@ type ListVideosRequest struct {
 	// Limit, sort and offset are required
 	Limit  *int
 	Offset *int
-	Sort   *string
+	Sort   *string  // "asc" or "desc" — direction
+	SortBy *string  // "date", "views", "downloads" — column
 
 	// Flags
 	Statuses *[]int
@@ -36,14 +37,28 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		return nil, fmt.Errorf("no offset provided")
 	}
 
-	// check sort formatting
+	// Sort direction
+	sortDir := "DESC"
 	if req.Sort != nil {
 		if *req.Sort != "desc" && *req.Sort != "asc" {
 			return nil, fmt.Errorf("invalid sort provided")
 		}
-	} else {
-		req.Sort = new(string)
-		*req.Sort = "desc"
+		if *req.Sort == "asc" {
+			sortDir = "ASC"
+		}
+	}
+
+	// Sort column
+	orderClause := "videos.inserted_at " + sortDir
+	if req.SortBy != nil {
+		switch *req.SortBy {
+		case "views":
+			orderClause = "views " + sortDir
+		case "downloads":
+			orderClause = "downloads " + sortDir
+		case "date":
+			orderClause = "videos.inserted_at " + sortDir
+		}
 	}
 
 	q := sq.Select(
@@ -70,8 +85,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		) as downloads`,
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
-		Where(sq.NotEq{"videos.status": 4}).
-		OrderBy("videos.id " + *req.Sort).
+		OrderBy(orderClause).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
@@ -111,7 +125,19 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 
 		q = q.Where(wherein)
 
+		// Default: exclude archived when no explicit status filter
+		if req.Statuses == nil {
+			q = q.Where(sq.NotEq{"videos.status": 4})
+		}
+
 	} else {
+		// Status filter: explicit set overrides the default exclude-archived
+		if req.Statuses != nil && len(*req.Statuses) > 0 {
+			q = q.Where(sq.Eq{"videos.status": *req.Statuses})
+		} else {
+			q = q.Where(sq.NotEq{"videos.status": 4})
+		}
+
 		if req.PlaylistID != nil {
 			q = q.LeftJoin("playlist_associations ON videos.id = playlist_associations.video_id")
 			q = q.Where(sq.Eq{"playlist_associations.playlist_id": *req.PlaylistID})
@@ -123,10 +149,6 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 
 		if req.Identifier != nil {
 			q = q.Where(sq.Eq{"videos.uuid": *req.Identifier})
-		}
-
-		if req.Statuses != nil {
-			q = q.Where(sq.Eq{"videos.status": *req.Statuses})
 		}
 
 		if req.Search != nil {
