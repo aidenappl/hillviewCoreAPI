@@ -17,6 +17,7 @@ type Video struct {
 	Views          int         `json:"views"`
 	Downloads      int         `json:"downloads"`
 	Status         *GeneralNSN `json:"status"`
+	Creator        *UserTS     `json:"creator,omitempty"`
 	InsertedAt     string      `json:"inserted_at"`
 }
 

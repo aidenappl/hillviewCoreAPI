@@ -9,12 +9,13 @@ import (
 )
 
 type CreateVideoRequest struct {
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Thumbnail   *string `json:"thumbnail"`
-	URL         *string `json:"url"`
-	DownloadURL *string `json:"download_url"`
-	Status      *int    `json:"status"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Thumbnail     *string `json:"thumbnail"`
+	URL           *string `json:"url"`
+	DownloadURL   *string `json:"download_url"`
+	Status        *int    `json:"status"`
+	CreatorUserID *int    `json:"creator_user_id"`
 }
 
 func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error) {
@@ -49,7 +50,8 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			"url",
 			"download_url",
 			"allow_downloads",
-			"status").
+			"status",
+			"creator_user_id").
 		Values(
 			*req.Title,
 			*req.Description,
@@ -57,7 +59,8 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			*req.URL,
 			req.DownloadURL,
 			false,
-			*req.Status).
+			*req.Status,
+			req.CreatorUserID).
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create sql query: %w", err)

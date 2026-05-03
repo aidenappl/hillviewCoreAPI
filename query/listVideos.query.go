@@ -13,18 +13,19 @@ type ListVideosRequest struct {
 	// Limit, sort and offset are required
 	Limit  *int
 	Offset *int
-	Sort   *string  // "asc" or "desc" — direction
-	SortBy *string  // "date", "views", "downloads" — column
+	Sort   *string // "asc" or "desc" — direction
+	SortBy *string // "date", "views", "downloads" — column
 
 	// Flags
 	Statuses *[]int
 
-	// Search
-	Search     *string
-	PlaylistID *int
-	ID         *int
-	Identifier *string
-	UseOr      bool
+	// Search / filters
+	Search        *string
+	PlaylistID    *int
+	ID            *int
+	Identifier    *string
+	CreatorUserID *int
+	UseOr         bool
 }
 
 func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error) {
@@ -83,8 +84,14 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		`(
 			SELECT COUNT(video_downloads.id) FROM video_downloads WHERE video_downloads.video_id = videos.id
 		) as downloads`,
+
+		"users.id",
+		"users.name",
+		"users.email",
+		"users.profile_image_url",
 	).From("videos").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
+		LeftJoin("users ON videos.creator_user_id = users.id").
 		OrderBy(orderClause).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
@@ -161,6 +168,11 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		}
 	}
 
+	// Creator filter — always AND regardless of UseOr
+	if req.CreatorUserID != nil {
+		q = q.Where(sq.Eq{"videos.creator_user_id": *req.CreatorUserID})
+	}
+
 	query, args, err := q.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create query: %w", err)
@@ -178,6 +190,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 	for rows.Next() {
 		var video structs.Video
 		var status structs.GeneralNSN
+		var creator structs.UserTS
 
 		err = rows.Scan(
 			&video.ID,
@@ -196,6 +209,11 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 
 			&video.Views,
 			&video.Downloads,
+
+			&creator.ID,
+			&creator.Name,
+			&creator.Email,
+			&creator.ProfileImageURL,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
@@ -211,9 +229,9 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		}
 
 		video.Status = &status
+		video.Creator = &creator
 
 		videos = append(videos, &video)
-
 	}
 
 	return videos, nil

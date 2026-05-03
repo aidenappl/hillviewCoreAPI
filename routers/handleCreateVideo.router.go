@@ -52,6 +52,10 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// attach the authenticated user as creator
+	creatorID := user.ID
+	req.CreateVideoRequest.CreatorUserID = &creatorID
+
 	// create the video
 	video, err := query.CreateVideo(db.DB, req.CreateVideoRequest)
 	if err != nil {

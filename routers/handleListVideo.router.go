@@ -12,12 +12,13 @@ import (
 )
 
 type HandleListVideoRequest struct {
-	Limit    int
-	Offset   int
-	Search   *string
-	Sort     *string
-	SortBy   *string
-	Statuses *[]int
+	Limit         int
+	Offset        int
+	Search        *string
+	Sort          *string
+	SortBy        *string
+	Statuses      *[]int
+	CreatorUserID *int
 }
 
 func HandleListVideo(w http.ResponseWriter, r *http.Request) {
@@ -83,14 +84,23 @@ func HandleListVideo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	userID := r.URL.Query().Get("user_id")
+	if userID != "" {
+		intUserID, err := strconv.Atoi(userID)
+		if err == nil {
+			req.CreatorUserID = &intUserID
+		}
+	}
+
 	// get the list of videos
 	videos, err := query.ListVideos(db.DB, query.ListVideosRequest{
-		Limit:    &req.Limit,
-		Offset:   &req.Offset,
-		Search:   req.Search,
-		Sort:     req.Sort,
-		SortBy:   req.SortBy,
-		Statuses: req.Statuses,
+		Limit:         &req.Limit,
+		Offset:        &req.Offset,
+		Search:        req.Search,
+		Sort:          req.Sort,
+		SortBy:        req.SortBy,
+		Statuses:      req.Statuses,
+		CreatorUserID: req.CreatorUserID,
 	})
 	if err != nil {
 		responder.SendError(w, "failed to list videos: "+err.Error(), http.StatusInternalServerError)
