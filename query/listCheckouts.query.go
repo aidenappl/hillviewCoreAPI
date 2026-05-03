@@ -50,7 +50,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 		"users.id",
 		"users.name",
 		"users.email",
-		"users.identifier",
+		"users.nfc_identifier",
 		"users.profile_image_url",
 		"users.inserted_at",
 
@@ -113,7 +113,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 			&user.ID,
 			&user.Name,
 			&user.Email,
-			&user.Identifier,
+			&user.NfcIdentifier,
 			&user.ProfileImageURL,
 			&user.InsertedAt,
 

@@ -294,7 +294,7 @@ func ReadUser(db db.Queryable, id *int, tag *string) (*structs.MobileUser, error
 		"users.id",
 		"users.name",
 		"users.email",
-		"users.identifier",
+		"users.nfc_identifier",
 		"users.profile_image_url",
 		"users.inserted_at",
 	).
@@ -305,7 +305,7 @@ func ReadUser(db db.Queryable, id *int, tag *string) (*structs.MobileUser, error
 	}
 
 	if tag != nil {
-		q = q.Where(sq.Eq{"users.identifier": *tag})
+		q = q.Where(sq.Eq{"users.nfc_identifier": *tag})
 	}
 
 	query, args, err := q.ToSql()
@@ -330,7 +330,7 @@ func ReadUser(db db.Queryable, id *int, tag *string) (*structs.MobileUser, error
 		&user.ID,
 		&user.Name,
 		&user.Email,
-		&user.Identifier,
+		&user.NfcIdentifier,
 		&user.ProfileImageURL,
 		&user.InsertedAt,
 	)

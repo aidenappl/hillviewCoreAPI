@@ -54,7 +54,7 @@ func UpdateMobileUser(db db.Queryable, req UpdateMobileUserRequest) (*structs.Mo
 	}
 
 	if req.Changes.Identifier != nil {
-		q = q.Set("identifier", req.Changes.Identifier)
+		q = q.Set("nfc_identifier", req.Changes.Identifier)
 	}
 
 	if req.Changes.Status != nil {

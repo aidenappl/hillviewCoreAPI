@@ -45,7 +45,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 		"users.id",
 		"users.name",
 		"users.email",
-		"users.identifier",
+		"users.nfc_identifier",
 		"users.profile_image_url",
 		"users.inserted_at",
 
@@ -64,7 +64,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 		q = q.Where(sq.Or{
 			sq.Like{"users.name": "%" + *req.Search + "%"},
 			sq.Like{"users.email": "%" + *req.Search + "%"},
-			sq.Like{"users.identifier": "%" + *req.Search + "%"},
+			sq.Like{"users.nfc_identifier": "%" + *req.Search + "%"},
 		})
 	}
 
@@ -75,7 +75,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 
 	// add identifier
 	if req.Identifier != nil {
-		q = q.Where(sq.Eq{"users.identifier": *req.Identifier})
+		q = q.Where(sq.Eq{"users.nfc_identifier": *req.Identifier})
 	}
 
 	// run the query
@@ -98,7 +98,7 @@ func ListMobileUsers(db db.Queryable, req ListMobileUsersRequest) ([]*structs.Mo
 			&user.ID,
 			&user.Name,
 			&user.Email,
-			&user.Identifier,
+			&user.NfcIdentifier,
 			&user.ProfileImageURL,
 			&user.InsertedAt,
 

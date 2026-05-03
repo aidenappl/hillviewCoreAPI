@@ -30,7 +30,7 @@ func CreateMobileUser(db db.Queryable, req CreateMobileUserRequest) (*structs.Mo
 	}
 
 	// build the query
-	cols := []string{"name", "email", "identifier"}
+	cols := []string{"name", "email", "nfc_identifier"}
 	vals := []interface{}{req.Name, req.Email, req.Identifier}
 
 	if req.ProfileImageURL != nil {

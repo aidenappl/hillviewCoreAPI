@@ -35,7 +35,7 @@ func EditMobileAccount(db db.Queryable, req EditMobileAccountRequest) (interface
 		q = q.Set("users.profile_image_url", req.Modifications.ProfileImageURL)
 	}
 	if req.Modifications.Identifier != nil {
-		q = q.Set("users.identifier", req.Modifications.Identifier)
+		q = q.Set("users.nfc_identifier", req.Modifications.Identifier)
 	}
 	if req.Modifications.Status != nil {
 		q = q.Set("users.status", req.Modifications.Status)
@@ -67,7 +67,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 	q := sq.Select(
 		"users.id",
 		"users.name",
-		"users.identifier",
+		"users.nfc_identifier",
 		"users.email",
 		"users.profile_image_url",
 		"users.inserted_at",
@@ -94,7 +94,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 	if req.Search != nil {
 		q = q.Where(sq.Or{
 			sq.Like{"users.name": "%" + *req.Search + "%"},
-			sq.Like{"users.identifier": "%" + *req.Search + "%"},
+			sq.Like{"users.nfc_identifier": "%" + *req.Search + "%"},
 			sq.Like{"users.email": "%" + *req.Search + "%"},
 		})
 	}
@@ -110,7 +110,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 		err := db.QueryRow(query, args...).Scan(
 			&user.ID,
 			&user.Name,
-			&user.Identifier,
+			&user.NfcIdentifier,
 			&user.Email,
 			&user.ProfileImageURL,
 			&user.InsertedAt,
@@ -141,7 +141,7 @@ func GetMobileUsers(db db.Queryable, req GetMobileUsersRequest) (interface{}, er
 			err := rows.Scan(
 				&user.ID,
 				&user.Name,
-				&user.Identifier,
+				&user.NfcIdentifier,
 				&user.Email,
 				&user.ProfileImageURL,
 				&user.InsertedAt,
