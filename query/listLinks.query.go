@@ -9,10 +9,12 @@ import (
 )
 
 type ListLinksRequest struct {
-	Limit  *int
-	Offset *int
-	Search *string
-	Sort   *string
+	Limit       *int
+	Offset      *int
+	Search      *string
+	Sort        *string
+	SortBy      *string
+	ShowArchived *bool
 
 	// params
 	ID *int
@@ -35,6 +37,22 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		}
 	}
 
+	sortDir := "DESC"
+	if req.Sort != nil && *req.Sort == "asc" {
+		sortDir = "ASC"
+	}
+
+	// determine order column
+	orderCol := "links.inserted_at"
+	if req.SortBy != nil {
+		switch *req.SortBy {
+		case "clicks":
+			orderCol = "clicks"
+		case "date":
+			orderCol = "links.inserted_at"
+		}
+	}
+
 	// build query
 	q := sq.Select(
 		"links.id",
@@ -53,11 +71,15 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		) as clicks`,
 	).
 		From("links").
-		OrderBy("links.id DESC").
+		OrderBy(fmt.Sprintf("%s %s", orderCol, sortDir)).
 		Join("users ON links.created_by = users.id").
-		Where(sq.Eq{"links.active": true}).
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
+
+	// active filter
+	if req.ShowArchived == nil || !*req.ShowArchived {
+		q = q.Where(sq.Eq{"links.active": true})
+	}
 
 	// add params
 	if req.ID != nil {
@@ -66,12 +88,7 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 
 	// add search
 	if req.Search != nil {
-		q = q.Where(sq.Like{"links.route": *req.Search})
-	}
-
-	// add sort
-	if req.Sort != nil {
-		q = q.OrderBy(fmt.Sprintf("links.id %s", *req.Sort))
+		q = q.Where(sq.Like{"links.route": "%" + *req.Search + "%"})
 	}
 
 	// run query

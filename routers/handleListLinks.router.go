@@ -11,10 +11,12 @@ import (
 )
 
 type HandleListLinksRequest struct {
-	Limit  *int
-	Offset *int
-	Search *string
-	Sort   *string
+	Limit        *int
+	Offset       *int
+	Search       *string
+	Sort         *string
+	SortBy       *string
+	ShowArchived *bool
 }
 
 func HandleListLinks(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +27,8 @@ func HandleListLinks(w http.ResponseWriter, r *http.Request) {
 	offset := r.URL.Query().Get("offset")
 	search := r.URL.Query().Get("search")
 	sort := r.URL.Query().Get("sort")
+	sortBy := r.URL.Query().Get("sort_by")
+	showArchived := r.URL.Query().Get("show_archived")
 
 	// parse query params
 	if limit != "" {
@@ -59,17 +63,24 @@ func HandleListLinks(w http.ResponseWriter, r *http.Request) {
 		req.Sort = &sort
 	}
 
+	if sortBy != "" {
+		req.SortBy = &sortBy
+	}
+
+	if showArchived == "true" {
+		t := true
+		req.ShowArchived = &t
+	}
+
 	// run the query
 	links, err := query.ListLinks(db.DB, query.ListLinksRequest{
-		Limit:  req.Limit,
-		Offset: req.Offset,
-		Search: req.Search,
-		Sort:   req.Sort,
+		Limit:        req.Limit,
+		Offset:       req.Offset,
+		Search:       req.Search,
+		Sort:         req.Sort,
+		SortBy:       req.SortBy,
+		ShowArchived: req.ShowArchived,
 	})
-	if err != nil {
-		responder.SendError(w, "failed to list links: "+err.Error(), http.StatusConflict)
-		return
-	}
 	if err != nil {
 		responder.SendError(w, "failed to list links: "+err.Error(), http.StatusConflict)
 		return
