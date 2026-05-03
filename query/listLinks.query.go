@@ -9,12 +9,12 @@ import (
 )
 
 type ListLinksRequest struct {
-	Limit       *int
-	Offset      *int
-	Search      *string
-	Sort        *string
-	SortBy      *string
-	ShowArchived *bool
+	Limit  *int
+	Offset *int
+	Search *string
+	Sort   *string
+	SortBy *string
+	Active *bool // nil = all, true = active only, false = archived only
 
 	// params
 	ID *int
@@ -76,9 +76,9 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
-	// active filter
-	if req.ShowArchived == nil || !*req.ShowArchived {
-		q = q.Where(sq.Eq{"links.active": true})
+	// active filter: nil = all, true = active only, false = archived only
+	if req.Active != nil {
+		q = q.Where(sq.Eq{"links.active": *req.Active})
 	}
 
 	// add params
