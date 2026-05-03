@@ -60,6 +60,7 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 		"links.destination",
 		"links.active",
 		"links.inserted_at",
+		"links.updated_at",
 
 		"users.id",
 		"users.name",
@@ -113,6 +114,7 @@ func ListLinks(db db.Queryable, req ListLinksRequest) ([]*structs.Link, error) {
 			&link.Destination,
 			&link.Active,
 			&link.InsertedAt,
+			&link.UpdatedAt,
 
 			&user.ID,
 			&user.Name,

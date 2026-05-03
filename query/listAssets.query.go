@@ -41,6 +41,7 @@ func ListAssets(db db.Queryable, req ListAssetsRequest) (*[]structs.Asset, error
 		"assets.image_url",
 		"assets.description",
 		"assets.inserted_at",
+		"assets.updated_at",
 
 		"asset_statuses.id",
 		"asset_statuses.name",
@@ -107,6 +108,7 @@ func ListAssets(db db.Queryable, req ListAssetsRequest) (*[]structs.Asset, error
 			&asset.ImageURL,
 			&asset.Description,
 			&asset.InsertedAt,
+			&asset.UpdatedAt,
 
 			&assetStatus.ID,
 			&assetStatus.Name,

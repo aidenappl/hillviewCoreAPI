@@ -59,6 +59,7 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 		"playlists.banner_image",
 		"playlists.route",
 		"playlists.inserted_at",
+		"playlists.updated_at",
 
 		"playlist_statuses.id",
 		"playlist_statuses.name",
@@ -111,6 +112,7 @@ func ListPlaylists(db db.Queryable, req ListPlaylistsRequest) ([]*structs.Playli
 			&playlist.BannerImage,
 			&playlist.Route,
 			&playlist.InsertedAt,
+			&playlist.UpdatedAt,
 
 			&status.ID,
 			&status.Name,

@@ -13,4 +13,5 @@ type Asset struct {
 	Metadata    *AssetMetadata        `json:"metadata"`
 	ActiveTab   *AssetCheckoutOmitted `json:"active_tab"`
 	InsertedAt  time.Time             `json:"inserted_at"`
+	UpdatedAt   time.Time             `json:"updated_at"`
 }

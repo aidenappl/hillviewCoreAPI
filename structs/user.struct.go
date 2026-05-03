@@ -10,6 +10,7 @@ type User struct {
 	ProfileImageURL          string                        `json:"profile_image_url"`
 	Authentication           GeneralNSN                    `json:"authentication"`
 	InsertedAt               time.Time                     `json:"inserted_at"`
+	UpdatedAt                time.Time                     `json:"updated_at"`
 	LastActive               *time.Time                    `json:"last_active"`
 	AuthenticationStrategies *UserAuthenticationStrategies `json:"strategies,omitempty"`
 }
@@ -22,6 +23,7 @@ type UserTS struct {
 	ProfileImageURL          *string                       `json:"profile_image_url,omitempty"`
 	Authentication           *GeneralNSN                   `json:"authentication,omitempty"`
 	InsertedAt               *time.Time                    `json:"inserted_at,omitempty"`
+	UpdatedAt                *time.Time                    `json:"updated_at,omitempty"`
 	LastActive               *time.Time                    `json:"last_active,omitempty"`
 	AuthenticationStrategies *UserAuthenticationStrategies `json:"strategies,omitempty"`
 }

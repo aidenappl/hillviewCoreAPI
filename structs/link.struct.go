@@ -8,4 +8,5 @@ type Link struct {
 	Creator     UserTS `json:"creator"`
 	Clicks      int    `json:"clicks"`
 	InsertedAt  string `json:"inserted_at"`
+	UpdatedAt   string `json:"updated_at"`
 }

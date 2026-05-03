@@ -49,6 +49,7 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 		"users.email",
 		"users.profile_image_url",
 		"users.inserted_at",
+		"users.updated_at",
 		`(SELECT MAX(request_logs.inserted_at)
         FROM request_logs
         WHERE request_logs.user_id = users.id) as last_active`,
@@ -112,6 +113,7 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 			&user.Email,
 			&user.ProfileImageURL,
 			&user.InsertedAt,
+			&user.UpdatedAt,
 			&user.LastActive,
 
 			&userType.ID,

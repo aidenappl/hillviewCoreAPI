@@ -63,6 +63,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 		"asset_checkouts.time_out",
 		"asset_checkouts.time_in",
 		"asset_checkouts.expected_in",
+		"asset_checkouts.updated_at",
 	).
 		From("asset_checkouts").
 		LeftJoin("checkout_statuses ON asset_checkouts.checkout_status = checkout_statuses.id").
@@ -125,6 +126,7 @@ func ListCheckouts(db db.Queryable, req ListCheckoutsRequest) ([]*structs.Checko
 			&checkout.TimeOut,
 			&checkout.TimeIn,
 			&checkout.ExpectedIn,
+			&checkout.UpdatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)

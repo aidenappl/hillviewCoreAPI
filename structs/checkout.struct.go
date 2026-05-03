@@ -14,4 +14,5 @@ type Checkout struct {
 	TimeOut        *time.Time  `json:"time_out"`
 	TimeIn         *time.Time  `json:"time_in"`
 	ExpectedIn     *time.Time  `json:"expected_in"`
+	UpdatedAt      *time.Time  `json:"updated_at"`
 }
