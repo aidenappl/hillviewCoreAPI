@@ -9,8 +9,8 @@ import (
 )
 
 type ReorderSpotlightItem struct {
-	Rank    int `json:"rank"`
-	VideoID int `json:"video_id"`
+	Position int `json:"position"`
+	VideoID  int `json:"video_id"`
 }
 
 type ReorderSpotlightsRequest struct {
@@ -25,16 +25,16 @@ func ReorderSpotlights(database db.Queryable, req ReorderSpotlightsRequest) ([]*
 	for _, item := range req.Items {
 		q := sq.Update("spotlight").
 			Set("video_id", item.VideoID).
-			Where(sq.Eq{"rank": item.Rank})
+			Where(sq.Eq{"position": item.Position})
 
 		query, args, err := q.ToSql()
 		if err != nil {
-			return nil, fmt.Errorf("error building query for rank %d: %v", item.Rank, err)
+			return nil, fmt.Errorf("error building query for position %d: %v", item.Position, err)
 		}
 
 		_, err = database.Exec(query, args...)
 		if err != nil {
-			return nil, fmt.Errorf("error executing update for rank %d: %v", item.Rank, err)
+			return nil, fmt.Errorf("error executing update for position %d: %v", item.Position, err)
 		}
 	}
 

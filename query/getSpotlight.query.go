@@ -9,19 +9,19 @@ import (
 )
 
 type GetSpotlightRequest struct {
-	Rank *int
+	Position *int
 }
 
 func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight, error) {
 	//  check required fields
-	if req.Rank == nil {
-		return nil, fmt.Errorf("required field rank is nil")
+	if req.Position == nil {
+		return nil, fmt.Errorf("required field position is nil")
 	}
 
 	// build query
 
 	q := sq.Select(
-		"spotlight.rank",
+		"spotlight.position",
 		"spotlight.video_id",
 		"spotlight.inserted_at",
 		"spotlight.updated_at",
@@ -47,7 +47,7 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 	q = q.From("spotlight").
 		LeftJoin("videos ON spotlight.video_id = videos.id").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
-		Where(sq.Eq{"spotlight.rank": *req.Rank})
+		Where(sq.Eq{"spotlight.position": *req.Position})
 
 	query, args, err := q.ToSql()
 	if err != nil {
@@ -60,7 +60,7 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 	v.Status = &structs.GeneralNSNNulled{}
 
 	err = row.Scan(
-		&s.Rank,
+		&s.Position,
 		&s.VideoID,
 		&s.InsertedAt,
 		&s.UpdatedAt,

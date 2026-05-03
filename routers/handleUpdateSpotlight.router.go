@@ -15,18 +15,18 @@ func HandleUpdateSpotlight(w http.ResponseWriter, r *http.Request) {
 	//  parse body
 	req := query.UpdateSpotlightRequest{}
 
-	// get rank from url
-	rankVar := mux.Vars(r)["rank"]
-	if rankVar == "" {
-		responder.ParamError(w, "rank")
+	// get position from url
+	positionVar := mux.Vars(r)["position"]
+	if positionVar == "" {
+		responder.ParamError(w, "position")
 		return
 	} else {
-		rank, err := strconv.Atoi(rankVar)
+		position, err := strconv.Atoi(positionVar)
 		if err != nil {
-			responder.SendError(w, "invalid rank", http.StatusBadRequest)
+			responder.SendError(w, "invalid position", http.StatusBadRequest)
 			return
 		}
-		req.Rank = &rank
+		req.Position = &position
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&req)

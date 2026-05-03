@@ -59,8 +59,8 @@ func main() {
 	// spotlight
 	admin.Handle("/spotlight", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleListSpotlight))).Methods(http.MethodGet)
 	admin.Handle("/spotlight/reorder", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleReorderSpotlight))).Methods(http.MethodPut)
-	admin.Handle("/spotlight/{rank}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetSpotlight))).Methods(http.MethodGet)
-	admin.Handle("/spotlight/{rank}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateSpotlight))).Methods(http.MethodPut)
+	admin.Handle("/spotlight/{position}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetSpotlight))).Methods(http.MethodGet)
+	admin.Handle("/spotlight/{position}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleUpdateSpotlight))).Methods(http.MethodPut)
 
 	// assets
 	admin.Handle("/asset/{query}", middleware.AccessTokenMiddleware(http.HandlerFunc(routers.HandleGetAsset))).Methods(http.MethodGet)

@@ -14,17 +14,17 @@ func HandleGetSpotlight(w http.ResponseWriter, r *http.Request) {
 	q := query.GetSpotlightRequest{}
 
 	// get the query var
-	rankVar := mux.Vars(r)["rank"]
-	if rankVar == "" {
-		responder.ParamError(w, "missing rank")
+	positionVar := mux.Vars(r)["position"]
+	if positionVar == "" {
+		responder.ParamError(w, "missing position")
 		return
 	} else {
-		rank, err := strconv.Atoi(rankVar)
+		position, err := strconv.Atoi(positionVar)
 		if err != nil {
-			responder.ParamError(w, "invalid rank")
+			responder.ParamError(w, "invalid position")
 			return
 		}
-		q.Rank = &rank
+		q.Position = &position
 	}
 
 	spotlight, err := query.GetSpotlight(db.DB, q)

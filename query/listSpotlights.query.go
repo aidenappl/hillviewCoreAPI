@@ -26,7 +26,7 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 	// build query
 
 	q := sq.Select(
-		"spotlight.rank",
+		"spotlight.position",
 		"spotlight.video_id",
 		"spotlight.inserted_at",
 		"spotlight.updated_at",
@@ -52,7 +52,7 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 	q = q.From("spotlight").
 		LeftJoin("videos ON spotlight.video_id = videos.id").
 		LeftJoin("video_statuses ON videos.status = video_statuses.id").
-		OrderBy("spotlight.rank ASC").
+		OrderBy("spotlight.position ASC").
 		Limit(uint64(*req.Limit)).
 		Offset(uint64(*req.Offset))
 
@@ -75,7 +75,7 @@ func ListSpotlights(db db.Queryable, req ListSpotlightsRequest) ([]*structs.Spot
 		v.Status = &structs.GeneralNSNNulled{}
 
 		err := rows.Scan(
-			&s.Rank,
+			&s.Position,
 			&s.VideoID,
 			&s.InsertedAt,
 			&s.UpdatedAt,

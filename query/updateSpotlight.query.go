@@ -9,14 +9,14 @@ import (
 )
 
 type UpdateSpotlightRequest struct {
-	Rank    *int `json:"rank"`
-	VideoID *int `json:"video_id"`
+	Position *int `json:"position"`
+	VideoID  *int `json:"video_id"`
 }
 
 func UpdateSpotlight(db db.Queryable, req UpdateSpotlightRequest) (*structs.Spotlight, error) {
 	//  check required fields
-	if req.Rank == nil {
-		return nil, fmt.Errorf("required field rank is nil")
+	if req.Position == nil {
+		return nil, fmt.Errorf("required field position is nil")
 	}
 
 	if req.VideoID == nil {
@@ -26,7 +26,7 @@ func UpdateSpotlight(db db.Queryable, req UpdateSpotlightRequest) (*structs.Spot
 	// build query
 	q := sq.Update("spotlight").
 		Set("video_id", *req.VideoID).
-		Where(sq.Eq{"rank": *req.Rank})
+		Where(sq.Eq{"position": *req.Position})
 
 	query, args, err := q.ToSql()
 	if err != nil {
@@ -40,7 +40,7 @@ func UpdateSpotlight(db db.Queryable, req UpdateSpotlightRequest) (*structs.Spot
 	}
 
 	// get updated spotlight
-	spotlight, err := GetSpotlight(db, GetSpotlightRequest{Rank: req.Rank})
+	spotlight, err := GetSpotlight(db, GetSpotlightRequest{Position: req.Position})
 	if err != nil {
 		return nil, fmt.Errorf("error getting updated spotlight: %v", err)
 	}
