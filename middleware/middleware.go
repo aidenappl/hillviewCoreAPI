@@ -233,7 +233,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 
 		if !claimsValid {
 			if resp.Expired {
-				responder.SendError(w, "Token is expired", http.StatusUnauthorized)
+				responder.SendError(w, "token is expired", http.StatusUnauthorized)
 			}
 			if resp.Revoked {
 				responder.SendError(w, "Token is revoked", http.StatusUnauthorized)
