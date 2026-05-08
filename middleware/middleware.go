@@ -139,17 +139,8 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 func MuxHeaderMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Authorization, "+
-			"Content-Type, "+
-			"Cookie, "+
-			"Accept-Encoding, "+
-			"Connection, "+
-			"Content-Length")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Add("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Add("Server", "Go")
 		next.ServeHTTP(w, r)
 	})
