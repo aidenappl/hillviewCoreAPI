@@ -28,12 +28,8 @@ func FindUser(db db.Queryable, req FindUserRequest) (*structs.User, error) {
 		"user_types.id",
 		"user_types.name",
 		"user_types.short_name",
-
-		"user_authentication.google_id",
-		"user_authentication.password",
 	).
 		From("users").
-		Join("user_authentication ON user_authentication.user_id = users.id").
 		Join("user_types ON user_types.id = users.authentication")
 
 	if req.ID != nil {
@@ -66,7 +62,6 @@ func FindUser(db db.Queryable, req FindUserRequest) (*structs.User, error) {
 
 	user := structs.User{}
 	status := structs.GeneralNSN{}
-	authentication := structs.UserAuthenticationStrategies{}
 	err = rows.Scan(
 		&user.ID,
 		&user.Name,
@@ -78,16 +73,12 @@ func FindUser(db db.Queryable, req FindUserRequest) (*structs.User, error) {
 		&status.ID,
 		&status.Name,
 		&status.ShortName,
-
-		&authentication.GoogleID,
-		&authentication.Password,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error scanning row: %w", err)
 	}
 
 	user.Authentication = status
-	user.AuthenticationStrategies = &authentication
 
 	return &user, nil
 }

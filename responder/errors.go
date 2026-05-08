@@ -19,7 +19,7 @@ func SendError(w http.ResponseWriter, errMessage string, status int, err ...erro
 		ErrorCode:    1000,
 	}
 	if len(err) > 0 && err[0] != nil {
-		errResp.Error = err[0].Error()
+		log.Printf("[ERROR DETAIL] %s: %v", errMessage, err[0])
 	}
 
 	log.Println("[ERROR RESPONSE] " + errResp.ErrorMessage)

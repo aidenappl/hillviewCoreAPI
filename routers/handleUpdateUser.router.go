@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
+	"github.com/hillview.tv/coreAPI/middleware"
 
 	"github.com/hillview.tv/coreAPI/query"
 	"github.com/hillview.tv/coreAPI/responder"
@@ -67,6 +68,15 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		req.Changes.Authentication == nil {
 		responder.SendError(w, "no changes provided", http.StatusBadRequest)
 		return
+	}
+
+	// prevent non-admins from changing authentication (role)
+	if req.Changes.Authentication != nil {
+		user := middleware.WithUserModelValue(r.Context())
+		if user == nil || user.Authentication.ShortName != "admin" {
+			responder.SendError(w, "only admins can change user roles", http.StatusForbidden)
+			return
+		}
 	}
 
 	// run the query

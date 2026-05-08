@@ -188,8 +188,13 @@ func TokenHandlers(next http.Handler) http.Handler {
 
 func AccessTokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get token from header
+		// get token from header or cookie
 		rawToken := r.Header.Get("Authorization")
+		if rawToken == "" {
+			if cookie, err := r.Cookie("hv_access"); err == nil && cookie.Value != "" {
+				rawToken = "Bearer " + cookie.Value
+			}
+		}
 		splitToken := strings.Split(rawToken, "Bearer ")
 
 		if len(splitToken) != 2 {

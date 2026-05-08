@@ -57,13 +57,9 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 		"user_types.id",
 		"user_types.name",
 		"user_types.short_name",
-
-		"user_authentication.google_id",
-		"user_authentication.password",
 	).
 		From("users").
 		LeftJoin("user_types ON users.authentication = user_types.id").
-		LeftJoin("user_authentication ON users.id = user_authentication.user_id").
 		Where(sq.NotEq{"users.authentication": 9}).
 		OrderBy("users.id " + *req.Sort).
 		Limit(uint64(*req.Limit)).
@@ -104,7 +100,6 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 	var users []*structs.User
 	for rows.Next() {
 		var user structs.User
-		var userAuth structs.UserAuthenticationStrategies
 		var userType structs.GeneralNSN
 		err = rows.Scan(
 			&user.ID,
@@ -119,16 +114,9 @@ func ListUsers(db db.Queryable, req ListUsersRequest) ([]*structs.User, error) {
 			&userType.ID,
 			&userType.Name,
 			&userType.ShortName,
-
-			&userAuth.GoogleID,
-			&userAuth.Password,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
-		}
-
-		if req.IncludeSensitiveData {
-			user.AuthenticationStrategies = &userAuth
 		}
 
 		user.Authentication = userType
