@@ -23,6 +23,7 @@ type UpdateVideoChanges struct {
 	Description    *string `json:"description"`
 	Thumbnail      *string `json:"thumbnail"`
 	AllowDownloads *bool   `json:"allow_downloads"`
+	ShowCaptions   *bool   `json:"show_captions"`
 	DownloadURL    *string `json:"download_url"`
 	URL            *string `json:"url"`
 	Status         *int    `json:"status"`
@@ -40,7 +41,7 @@ func UpdateVideo(db db.Queryable, req UpdateVideoRequest) (*structs.Video, error
 	}
 
 	// check that there is at least one change
-	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
+	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.ShowCaptions == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
 		return nil, fmt.Errorf("no changes provided")
 	}
 
@@ -61,6 +62,10 @@ func UpdateVideo(db db.Queryable, req UpdateVideoRequest) (*structs.Video, error
 
 	if req.Changes.AllowDownloads != nil {
 		q = q.Set("allow_downloads", req.Changes.AllowDownloads)
+	}
+
+	if req.Changes.ShowCaptions != nil {
+		q = q.Set("show_captions", req.Changes.ShowCaptions)
 	}
 
 	if req.Changes.DownloadURL != nil {

@@ -28,6 +28,7 @@ type videoChangeFields struct {
 	Description    *string `json:"description"`
 	Thumbnail      *string `json:"thumbnail"`
 	AllowDownloads *bool   `json:"allow_downloads"`
+	ShowCaptions   *bool   `json:"show_captions"`
 	DownloadURL    *string `json:"download_url"`
 	URL            *string `json:"url"`
 	Status         *int    `json:"status"`
@@ -74,7 +75,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
+	if req.Changes.Title == nil && req.Changes.Description == nil && req.Changes.Thumbnail == nil && req.Changes.AllowDownloads == nil && req.Changes.ShowCaptions == nil && req.Changes.DownloadURL == nil && req.Changes.URL == nil && req.Changes.Status == nil {
 		responder.SendError(w, "no changes to make", http.StatusBadRequest)
 		return
 	}
@@ -111,6 +112,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 			Description:    req.Changes.Description,
 			Thumbnail:      req.Changes.Thumbnail,
 			AllowDownloads: req.Changes.AllowDownloads,
+			ShowCaptions:   req.Changes.ShowCaptions,
 			DownloadURL:    req.Changes.DownloadURL,
 			URL:            req.Changes.URL,
 			Status:         req.Changes.Status,
