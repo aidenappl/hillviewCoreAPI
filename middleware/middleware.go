@@ -254,15 +254,15 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserContextType, user)
-		r = r.WithContext(ctx)
-
 		// check user permissions
 		if user.Authentication.ID == 1 || user.Authentication.ID == 9 {
 			responder.SendError(w, "Invalid token", http.StatusUnauthorized)
 			return
 		}
+
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, UserContextType, user)
+		r = r.WithContext(ctx)
 
 		if user.Authentication.ShortName == "student" {
 			// check route

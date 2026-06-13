@@ -14,6 +14,7 @@ type CreateVideoRequest struct {
 	Thumbnail     *string `json:"thumbnail"`
 	URL           *string `json:"url"`
 	DownloadURL   *string `json:"download_url"`
+	Duration      *int    `json:"duration"`
 	Status        *int    `json:"status"`
 	CreatorUserID *int    `json:"creator_user_id"`
 }
@@ -49,6 +50,7 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			"thumbnail",
 			"url",
 			"download_url",
+			"duration",
 			"allow_downloads",
 			"status",
 			"creator_user_id").
@@ -58,6 +60,7 @@ func CreateVideo(db db.Queryable, req CreateVideoRequest) (*structs.Video, error
 			*req.Thumbnail,
 			*req.URL,
 			req.DownloadURL,
+			req.Duration,
 			false,
 			*req.Status,
 			req.CreatorUserID).
