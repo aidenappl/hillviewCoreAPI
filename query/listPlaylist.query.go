@@ -12,8 +12,8 @@ type ListPlaylistsRequest struct {
 	Limit  *int
 	Offset *int
 	Search *string
-	Sort   *string  // "asc" or "desc" — direction
-	SortBy *string  // "date" — column
+	Sort   *string // "asc" or "desc" — direction
+	SortBy *string // "date" — column
 
 	Statuses *[]int
 

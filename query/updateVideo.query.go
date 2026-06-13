@@ -69,6 +69,9 @@ func UpdateVideo(db db.Queryable, req UpdateVideoRequest) (*structs.Video, error
 
 	if req.Changes.URL != nil {
 		q = q.Set("url", req.Changes.URL)
+		// The URL (and thus the underlying Cloudflare video) changed — invalidate
+		// the cached duration so the videoAPI sync job re-fetches it from Cloudflare.
+		q = q.Set("duration", nil)
 	}
 
 	if req.Changes.Status != nil {

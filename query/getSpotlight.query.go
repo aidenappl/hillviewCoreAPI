@@ -34,6 +34,7 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 		"videos.url",
 		"videos.download_url",
 		"videos.allow_downloads",
+		"videos.duration",
 		"videos.inserted_at",
 		`(
 			SELECT COUNT(video_views.id) FROM video_views WHERE video_views.video_id = videos.id
@@ -73,6 +74,7 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 		&v.URL,
 		&v.DownloadURL,
 		&v.AllowDownloads,
+		&v.Duration,
 		&v.InsertedAt,
 		&v.Views,
 
@@ -94,6 +96,7 @@ func GetSpotlight(db db.Queryable, req GetSpotlightRequest) (*structs.Spotlight,
 			URL:            *v.URL,
 			DownloadURL:    v.DownloadURL,
 			AllowDownloads: *v.AllowDownloads,
+			Duration:       v.Duration,
 			InsertedAt:     *v.InsertedAt,
 			Views:          *v.Views,
 			Status: &structs.GeneralNSN{

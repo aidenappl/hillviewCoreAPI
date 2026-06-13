@@ -71,6 +71,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 		"videos.download_url",
 		"videos.allow_downloads",
 		"videos.url",
+		"videos.duration",
 		"videos.inserted_at",
 
 		"video_statuses.id",
@@ -201,6 +202,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 			&video.DownloadURL,
 			&video.AllowDownloads,
 			&video.URL,
+			&video.Duration,
 			&video.InsertedAt,
 
 			&status.ID,
