@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -12,9 +15,19 @@ import (
 	"github.com/hillview.tv/coreAPI/env"
 	"github.com/hillview.tv/coreAPI/middleware"
 	"github.com/hillview.tv/coreAPI/routers"
+	"github.com/hillview.tv/coreAPI/telemetry"
 )
 
 func main() {
+	telemetry.Init(telemetry.Config{
+		Service:   "hillview-core-api",
+		IngestURL: env.MonitorIngestURL,
+		APIKey:    env.MonitorAPIKey,
+		Env:       env.MonitorEnv,
+		SpoolDir:  env.MonitorSpoolDir,
+		Stdout:    env.MonitorStdout,
+	})
+
 	primary := mux.NewRouter()
 
 	// Healthcheck Endpoint
@@ -32,6 +45,9 @@ func main() {
 
 	// Request ID Middleware
 	primary.Use(middleware.RequestIDMiddleware)
+
+	// Monitor: one http.request.end event per request, panics recovered
+	r.Use(telemetry.Middleware)
 
 	// Logging of requests
 	r.Use(middleware.LoggingMiddleware)
@@ -102,11 +118,27 @@ func main() {
 	fmt.Printf("✅ Hillview Core API running on port %s\n", env.Port)
 
 	// Add the health check polling
-	go background.StartHealthCheckPolling(ctx)
+	telemetry.Go(ctx, "background.healthcheck", background.StartHealthCheckPolling)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Origin", "Authorization", "Accept", "Cookie", "X-CSRF-Token"})
+	exposedOk := handlers.ExposedHeaders([]string{"X-Request-ID"})
 	originsOk := handlers.AllowedOrigins([]string{"https://team.hillview.tv", "https://hillview.tv", "https://live.hillview.tv", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002"})
 	allowCredentials := handlers.AllowCredentials()
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	log.Fatal(http.ListenAndServe(":"+env.Port, handlers.CORS(originsOk, headersOk, methodsOk, allowCredentials)(primary)))
+
+	// No Read/WriteTimeout: /admin/upload takes whole files, and the old
+	// ListenAndServe had no limit at all. Only the header read is bounded.
+	server := &http.Server{
+		Addr:              ":" + env.Port,
+		Handler:           handlers.CORS(originsOk, headersOk, exposedOk, methodsOk, allowCredentials)(primary),
+		ReadHeaderTimeout: 15 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	if err := telemetry.ServeWithGracefulShutdown(server, stop); err != nil {
+		fmt.Fprintf(os.Stderr, "server failed: %v\n", err)
+		os.Exit(1)
+	}
 }
