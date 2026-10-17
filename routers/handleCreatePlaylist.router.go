@@ -21,7 +21,7 @@ func HandleCreatePlaylist(w http.ResponseWriter, r *http.Request) {
 	// decode body
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		responder.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "failed to decode body", http.StatusBadRequest, err)
 		return
 	}
 
@@ -58,7 +58,7 @@ func HandleCreatePlaylist(w http.ResponseWriter, r *http.Request) {
 			ID: &videoID,
 		})
 		if err != nil {
-			responder.SendError(w, "failed to get video: "+err.Error(), http.StatusInternalServerError)
+			responder.SendError(w, "failed to get video", http.StatusInternalServerError, err)
 			return
 		}
 
@@ -72,7 +72,7 @@ func HandleCreatePlaylist(w http.ResponseWriter, r *http.Request) {
 	// create playlist
 	playlist, err := query.CreatePlaylist(db.DB, req.CreatePlaylistRequest)
 	if err != nil {
-		responder.SendError(w, "failed to create playlist: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to create playlist", http.StatusInternalServerError, err)
 		return
 	}
 

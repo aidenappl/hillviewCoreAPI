@@ -85,7 +85,7 @@ func HandleListLinks(w http.ResponseWriter, r *http.Request) {
 		Active: req.Active,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list links: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to list links", http.StatusConflict, err)
 		return
 	}
 

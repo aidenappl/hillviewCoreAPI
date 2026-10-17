@@ -69,7 +69,7 @@ func HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list mobile users: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list mobile users", http.StatusInternalServerError, err)
 		return
 	}
 

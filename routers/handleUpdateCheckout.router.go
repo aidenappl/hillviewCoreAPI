@@ -52,7 +52,7 @@ func HandleUpdateCheckout(w http.ResponseWriter, r *http.Request) {
 	// run the query
 	checkout, err := query.UpdateCheckout(db.AssetDB, req)
 	if err != nil {
-		responder.SendError(w, "failed to update checkout: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update checkout", http.StatusInternalServerError, err)
 		return
 	}
 

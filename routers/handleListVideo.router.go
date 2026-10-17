@@ -103,7 +103,7 @@ func HandleListVideo(w http.ResponseWriter, r *http.Request) {
 		CreatorUserID: req.CreatorUserID,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list videos: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list videos", http.StatusInternalServerError, err)
 		return
 	}
 

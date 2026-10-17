@@ -24,7 +24,7 @@ func HandleReorderSpotlight(w http.ResponseWriter, r *http.Request) {
 
 	spotlights, err := query.ReorderSpotlights(db.DB, query.ReorderSpotlightsRequest{Items: items})
 	if err != nil {
-		responder.SendError(w, err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError, err)
 		return
 	}
 

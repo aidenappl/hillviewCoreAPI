@@ -44,7 +44,7 @@ func HandleCreateMobileUser(w http.ResponseWriter, r *http.Request) {
 	// run the query
 	user, err := query.CreateMobileUser(db.AssetDB, req)
 	if err != nil {
-		responder.SendError(w, "failed to create mobile user: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to create mobile user", http.StatusInternalServerError, err)
 		return
 	}
 

@@ -42,7 +42,7 @@ func HandleListSpotlight(w http.ResponseWriter, r *http.Request) {
 
 	spotlights, err := query.ListSpotlights(db.DB, q)
 	if err != nil {
-		responder.SendError(w, err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError, err)
 		return
 	}
 

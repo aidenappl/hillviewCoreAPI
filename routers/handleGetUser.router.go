@@ -40,7 +40,7 @@ func HandleGetUser(w http.ResponseWriter, r *http.Request) {
 		ID: req.ID,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to get user: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to get user", http.StatusInternalServerError, err)
 		return
 	}
 

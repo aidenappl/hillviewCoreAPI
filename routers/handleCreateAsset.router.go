@@ -20,7 +20,7 @@ func HandleCreateAsset(w http.ResponseWriter, r *http.Request) {
 	// decode body
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		responder.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "failed to decode body", http.StatusBadRequest, err)
 		return
 	}
 
@@ -81,7 +81,7 @@ func HandleCreateAsset(w http.ResponseWriter, r *http.Request) {
 		Metadata:    req.Metadata,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to create asset: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to create asset", http.StatusInternalServerError, err)
 		return
 	}
 

@@ -82,7 +82,7 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	// run the query
 	user, err := query.UpdateUser(db.DB, req)
 	if err != nil {
-		responder.SendError(w, "failed to update user: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to update user", http.StatusConflict, err)
 		return
 	}
 
