@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hillview.tv/coreAPI/db"
 	"github.com/hillview.tv/coreAPI/query"
+	"github.com/hillview.tv/coreAPI/telemetry"
 )
 
 func HandleListAdminUsers(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +22,8 @@ func HandleListAdminUsers(w http.ResponseWriter, r *http.Request) {
 
 	limitInt, err := strconv.ParseUint(string(limit), 10, 64)
 	if err != nil {
-		http.Error(w, "failed to convert string to int: "+err.Error(), http.StatusInternalServerError)
+		telemetry.RecordFailureW(w, "failed to convert string to int", err)
+		http.Error(w, "failed to convert string to int", http.StatusInternalServerError)
 		return
 	}
 
@@ -29,7 +31,8 @@ func HandleListAdminUsers(w http.ResponseWriter, r *http.Request) {
 		Limit: &limitInt,
 	})
 	if err != nil {
-		http.Error(w, "failed to execute query: "+err.Error(), http.StatusInternalServerError)
+		telemetry.RecordFailureW(w, "failed to execute query", err)
+		http.Error(w, "failed to execute query", http.StatusInternalServerError)
 		return
 	}
 
@@ -62,7 +65,8 @@ func V1HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 	if len(limit) != 0 {
 		limitInt, err := strconv.ParseUint(string(limit), 10, 64)
 		if err != nil {
-			http.Error(w, "failed to convert string to int: "+err.Error(), http.StatusInternalServerError)
+			telemetry.RecordFailureW(w, "failed to convert string to int", err)
+			http.Error(w, "failed to convert string to int", http.StatusInternalServerError)
 			return
 		}
 		req.Limit = &limitInt
@@ -77,7 +81,8 @@ func V1HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 	if len(offset) != 0 {
 		offsetInt, err := strconv.ParseUint(string(offset), 10, 64)
 		if err != nil {
-			http.Error(w, "failed to convert string to int: "+err.Error(), http.StatusInternalServerError)
+			telemetry.RecordFailureW(w, "failed to convert string to int", err)
+			http.Error(w, "failed to convert string to int", http.StatusInternalServerError)
 			return
 		}
 		req.Offset = &offsetInt
@@ -100,7 +105,8 @@ func V1HandleListMobileUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		http.Error(w, "failed to execute query: "+err.Error(), http.StatusInternalServerError)
+		telemetry.RecordFailureW(w, "failed to execute query", err)
+		http.Error(w, "failed to execute query", http.StatusInternalServerError)
 		return
 	}
 

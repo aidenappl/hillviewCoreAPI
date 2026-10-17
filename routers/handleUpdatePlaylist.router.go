@@ -55,7 +55,7 @@ func HandleUpdatePlaylist(w http.ResponseWriter, r *http.Request) {
 		Changes: req.Changes,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to update playlist: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update playlist", http.StatusInternalServerError, err)
 		return
 	}
 

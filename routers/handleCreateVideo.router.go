@@ -59,7 +59,7 @@ func HandleCreateVideo(w http.ResponseWriter, r *http.Request) {
 	// create the video
 	video, err := query.CreateVideo(db.DB, req.CreateVideoRequest)
 	if err != nil {
-		responder.SendError(w, "failed to create video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to create video", http.StatusInternalServerError, err)
 		return
 	}
 

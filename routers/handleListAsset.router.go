@@ -66,7 +66,7 @@ func HandleListAsset(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list assets: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to list assets", http.StatusConflict, err)
 		return
 	}
 

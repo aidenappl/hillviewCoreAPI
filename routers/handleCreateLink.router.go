@@ -31,7 +31,7 @@ func HandleCreateLink(w http.ResponseWriter, r *http.Request) {
 	// create the link
 	link, err := query.CreateLink(db.DB, req.CreateLinkRequest)
 	if err != nil {
-		responder.SendError(w, "failed to create link: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to create link", http.StatusConflict, err)
 		return
 	}
 

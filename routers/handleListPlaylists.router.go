@@ -93,7 +93,7 @@ func HandleListPlaylists(w http.ResponseWriter, r *http.Request) {
 		Statuses: req.Statuses,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list playlists: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to list playlists", http.StatusInternalServerError, err)
 		return
 	}
 

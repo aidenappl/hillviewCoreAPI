@@ -69,7 +69,7 @@ func HandleListUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:   req.Sort,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to list users: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to list users", http.StatusConflict, err)
 		return
 	}
 

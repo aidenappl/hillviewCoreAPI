@@ -65,7 +65,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 	// parse the body
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		responder.SendError(w, "failed to decode body: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "failed to decode body", http.StatusBadRequest, err)
 		return
 	}
 
@@ -94,7 +94,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to get video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to get video", http.StatusInternalServerError, err)
 		return
 	}
 
@@ -119,7 +119,7 @@ func HandleEditVideo(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 	if err != nil {
-		responder.SendError(w, "failed to update video: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update video", http.StatusInternalServerError, err)
 		return
 	}
 

@@ -38,7 +38,7 @@ func HandleUpdateSpotlight(w http.ResponseWriter, r *http.Request) {
 	//  update spotlight
 	spotlight, err := query.UpdateSpotlight(db.DB, req)
 	if err != nil {
-		responder.SendError(w, err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError, err)
 		return
 	}
 

@@ -43,7 +43,7 @@ func HandleUpdateMobileUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := query.UpdateMobileUser(db.AssetDB, req)
 	if err != nil {
-		responder.SendError(w, "failed to update user: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to update user", http.StatusConflict, err)
 		return
 	}
 

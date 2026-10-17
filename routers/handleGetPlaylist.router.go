@@ -50,7 +50,7 @@ func HandleGetPlaylist(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to execute query: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to execute query", http.StatusConflict, err)
 		return
 	}
 

@@ -55,7 +55,7 @@ func HandleUpdateLink(w http.ResponseWriter, r *http.Request) {
 		Changes: req.Changes,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to update link: "+err.Error(), http.StatusInternalServerError)
+		responder.SendError(w, "failed to update link", http.StatusInternalServerError, err)
 		return
 	}
 

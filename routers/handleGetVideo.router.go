@@ -46,7 +46,7 @@ func HandleGetVideo(w http.ResponseWriter, r *http.Request) {
 		Identifier: req.Identifier,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to get videos: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to get videos", http.StatusConflict, err)
 		return
 	}
 

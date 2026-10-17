@@ -224,7 +224,7 @@ func AccessTokenMiddleware(next http.Handler) http.Handler {
 
 		claimsValid, resp, err := jwt.ValidJWT(r.Context(), rawToken, claims, &jwt.HVJwtClaims{Type: jwt.AccessToken})
 		if err != nil {
-			responder.SendError(w, err.Error(), http.StatusUnauthorized, err)
+			responder.SendError(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized, err)
 			return
 		}
 

@@ -17,7 +17,7 @@ type HandleImageUploadResponse struct {
 func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		responder.SendError(w, err.Error(), http.StatusBadRequest)
+		responder.SendError(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest, err)
 		return
 	}
 
@@ -31,7 +31,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	idInt, err = strconv.Atoi(id)
 	if err != nil {
-		responder.SendError(w, "Invalid id parameter: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "Invalid id parameter", http.StatusBadRequest, err)
 		return
 	}
 
@@ -51,14 +51,14 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 	// Get the image
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		responder.SendError(w, "image is required: "+err.Error(), http.StatusBadRequest)
+		responder.SendError(w, "image is required", http.StatusBadRequest, err)
 		return
 	}
 	defer file.Close()
 
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		responder.SendError(w, "failed to read image: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to read image", http.StatusConflict, err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		Route: route,
 	})
 	if err != nil {
-		responder.SendError(w, "failed to upload image to s3: "+err.Error(), http.StatusConflict)
+		responder.SendError(w, "failed to upload image to s3", http.StatusConflict, err)
 		return
 	}
 
