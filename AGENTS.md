@@ -12,6 +12,7 @@ Served at `https://api.hillview.tv/core/v1.1` (NPM path routing on the shared `a
 - `github.com/Masterminds/squirrel` + `github.com/go-sql-driver/mysql` (MariaDB, no ORM)
 - `github.com/gorilla/handlers` for CORS — a legacy deviation from the estate standard (`rs/cors`); leave it unless doing a deliberate migration
 - `github.com/aidenappl/go-monitor` **v0.0.9** — telemetry to Monitor zone `hillview` (§6)
+- `github.com/aidenappl/go-keyring` v1.1.0 — optional secrets from Keyring (`getSecret` in `env/`)
 - Also: AWS SDK v2 (S3 client for uploads to OpenBucket, or AWS S3 until cutover), SendGrid (mail), golang-jwt v5, google/uuid
 
 ## 3. Project structure
@@ -57,7 +58,8 @@ dev check    # gofmt -w -s . && go vet ./... && go test ./...
 | `SENDGRID_API_KEY` | yes | SendGrid |
 | `CONTENT_S3_ENDPOINT` | no | S3-compatible endpoint for image/thumbnail uploads (OpenBucket). Unset = AWS S3 via the SDK's default credential chain (`AWS_*`) — the pre-migration path |
 | `CONTENT_S3_REGION / CONTENT_S3_BUCKET` | no | Default `us-west-1` / `content.hillview.tv` |
-| `CONTENT_S3_ACCESS_KEY_ID / CONTENT_S3_SECRET_ACCESS_KEY` | with endpoint | Static credentials for `CONTENT_S3_ENDPOINT` |
+| `CONTENT_S3_ACCESS_KEY_ID / CONTENT_S3_SECRET_ACCESS_KEY` | with endpoint | Static credentials for `CONTENT_S3_ENDPOINT` — **from Keyring** (secrets 143/144) unless set in the environment |
+| `KEYRING_URL / KEYRING_ACCESS_KEY_ID / KEYRING_SECRET_ACCESS_KEY` | no | Keyring token `hillview-core-api`. `env` loads every secret granted to it once at startup (5s timeout); `getSecret` values prefer the environment, then Keyring. Unset or unreachable = environment only; `KEYRING_SOURCE=env` disables Keyring (tests) |
 | `CONTENT_PUBLIC_BASE_URL` | no | Base of the URL returned for an upload (default `https://content.hillview.tv`); the proxy serves that host from OpenBucket |
 | `AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY` | until cutover | Only read when `CONTENT_S3_ENDPOINT` is unset |
 | `PORT` | no | Listen port (default 8000; Lattice sets 8001–8005) |
@@ -115,7 +117,7 @@ Event catalogue:
 
 ## 8. Operations
 
-- **Deployed on Lattice stack 19 "Hillview API"** (worker-3, `10.15.10.75`), container `hillview-core-api`, host port `8001`. Stack env holds the secrets plus `MONITOR_HILLVIEW_INGEST_URL` / `MONITOR_HILLVIEW_INGEST_KEY`; the container maps them to `MONITOR_INGEST_URL` / `MONITOR_API_KEY` and mounts a named volume at `/var/lib/monitor-spool`.
+- **Deployed on Lattice stack 19 "Hillview API"** (worker-3, `10.15.10.75`), container `hillview-core-api`, host port `8001`. Stack env holds the secrets plus `MONITOR_HILLVIEW_INGEST_URL` / `MONITOR_HILLVIEW_INGEST_KEY`; the container maps them to `MONITOR_INGEST_URL` / `MONITOR_API_KEY` and mounts a named volume at `/var/lib/monitor-spool`. Keyring: the container gets `KEYRING_URL=${KEYRING_URL}` (Lattice global) and `KEYRING_ACCESS_KEY_ID` / `KEYRING_SECRET_ACCESS_KEY` from the stack's secret env `KEYRING_HILLVIEW_CORE_ACCESS_KEY_ID` / `KEYRING_HILLVIEW_CORE_SECRET_ACCESS_KEY` — Keyring token `hillview-core-api`, granted `CONTENT_S3_ACCESS_KEY_ID` / `CONTENT_S3_SECRET_ACCESS_KEY`. A boot logs `keyring: loaded N secrets`.
 - **CI:** push to `main` → `push-to-registry.yml` builds `registry.appleby.cloud/hillview-core-api:latest` → `LATTICE_DEPLOY_URL?container=…` redeploys this container. Env or compose changes need a **stack Deploy** in Lattice — a container redeploy reuses the old config.
 - **Logs:** `lattice_get_container_logs`; **errors:** Monitor zone hillview (`monitor_list_issues` with `service: hillview-core-api`).
 - **Health:** `GET /healthcheck` (Docker healthcheck) and the healthchecks.io heartbeat. `https://api.hillview.tv/` itself has no upstream — probe a prefixed route.
