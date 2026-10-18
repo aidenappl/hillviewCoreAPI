@@ -73,13 +73,15 @@ Local runs need a reachable MariaDB. Leave the `MONITOR_*` variables unset local
 - Code that writes errors another way (`http.Error`, hand-written JSON) still gets a cause: the middleware keeps the first 512 bytes of any 5xx body.
 - Every goroutine starts through `telemetry.Go(ctx, name, fn)` so a panic is reported instead of killing the process.
 - Background failures are reported with `telemetry.Warn` / `telemetry.Error` using `{resource}.{action}.failed` names, alongside the existing `log.Printf`.
-- No tests exist outside `telemetry/` (table-driven, standard `testing`, `monitor.StartRecording`).
+- Tests (table-driven, standard `testing`) live in `telemetry/` (with `monitor.StartRecording`) and `structs/` (`SetProviderIDs`). Keep testable logic out of `query/`: it imports `env`, which panics without the full environment.
 
 ## 6. Domain & architecture
 
 **Request flow:** Cloudflare → NPM (`api.hillview.tv`, path location `/core/v1.1`) → worker-3 `10.15.10.75:8001` → middleware → handler → MariaDB.
 
 **Middleware order** on the `/core/v1.1` subrouter: (request id, where present) → `telemetry.Middleware` → `LoggingMiddleware` → `MuxHeaderMiddleware` → `TokenHandlers` (where present) → route. `/healthcheck` is on the root router, outside all of it, and emits nothing.
+
+**Video provider ids:** video responses derive `cloudflare_id` (Cloudflare Stream url) and `mux_playback_id` (`https://stream.mux.com/{id}.m3u8`) from `videos.url` in `structs.Video.SetProviderIDs` — the same rules as hillviewVideoAPI's `streamurl` package; keep the two in step. The library is moving from Stream to Mux (Oct 2026), so both appear while the migration runs.
 
 **Auth:** Hillview JWTs minted by hillviewAuthAPI and signed with the shared `JWT_SIGNING_KEY`, read from `Authorization: Bearer` or the `hv_access` cookie. `AccessTokenMiddleware` calls `telemetry.SetUserID` once it resolves the user.
 

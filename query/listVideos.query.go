@@ -223,14 +223,7 @@ func ListVideos(db db.Queryable, req ListVideosRequest) ([]*structs.Video, error
 			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		if strings.Contains(video.URL, "cloudflare") {
-			parts := strings.Split(video.URL, "/")
-			if len(parts) > 0 {
-				video.CloudflareID = &parts[len(parts)-3]
-			} else {
-				video.CloudflareID = nil
-			}
-		}
+		video.SetProviderIDs()
 
 		video.Status = &status
 		video.Creator = &creator
