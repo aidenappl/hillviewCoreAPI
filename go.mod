@@ -3,6 +3,7 @@ module github.com/hillview.tv/coreAPI
 go 1.26.9
 
 require (
+	github.com/aidenappl/go-keyring v1.1.0
 	github.com/aidenappl/go-monitor v0.0.9
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.6
