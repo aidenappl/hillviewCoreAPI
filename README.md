@@ -8,7 +8,7 @@ Back-office API for team.hillview.tv — videos, playlists, spotlight, assets, l
 
 ## Overview
 
-The back-office API behind **team.hillview.tv**: videos, playlists, the homepage spotlight, equipment assets and checkouts, short links, staff users, mobile users, and file uploads to S3. Every `/admin` route requires a Hillview access token; student accounts are limited to `StudentAllowedRoutes` (videos, playlists, upload). It does **not** issue tokens (hillviewAuthAPI does) or serve the public site's catalogue (hillviewVideoAPI does).
+The back-office API behind **team.hillview.tv**: videos, playlists, the homepage spotlight, equipment assets and checkouts, short links, staff users, mobile users, and file uploads to S3-compatible storage (`content.hillview.tv`). Every `/admin` route requires a Hillview access token; student accounts are limited to `StudentAllowedRoutes` (videos, playlists, upload). It does **not** issue tokens (hillviewAuthAPI does) or serve the public site's catalogue (hillviewVideoAPI does).
 
 ## Role in the Hillview ecosystem
 

@@ -2,7 +2,7 @@
 
 ## 1. What this repo is
 
-The back-office API behind **team.hillview.tv**: videos, playlists, the homepage spotlight, equipment assets and checkouts, short links, staff users, mobile users, and file uploads to S3. Every `/admin` route requires a Hillview access token; student accounts are limited to `StudentAllowedRoutes` (videos, playlists, upload). It does **not** issue tokens (hillviewAuthAPI does) or serve the public site's catalogue (hillviewVideoAPI does).
+The back-office API behind **team.hillview.tv**: videos, playlists, the homepage spotlight, equipment assets and checkouts, short links, staff users, mobile users, and file uploads to S3-compatible storage (`content.hillview.tv`). Every `/admin` route requires a Hillview access token; student accounts are limited to `StudentAllowedRoutes` (videos, playlists, upload). It does **not** issue tokens (hillviewAuthAPI does) or serve the public site's catalogue (hillviewVideoAPI does).
 
 Served at `https://api.hillview.tv/core/v1.1` (NPM path routing on the shared `api.hillview.tv` host). Part of the Hillview platform — legacy codebase lineage; see §9 before copying any of its patterns elsewhere.
 
@@ -12,7 +12,7 @@ Served at `https://api.hillview.tv/core/v1.1` (NPM path routing on the shared `a
 - `github.com/Masterminds/squirrel` + `github.com/go-sql-driver/mysql` (MariaDB, no ORM)
 - `github.com/gorilla/handlers` for CORS — a legacy deviation from the estate standard (`rs/cors`); leave it unless doing a deliberate migration
 - `github.com/aidenappl/go-monitor` **v0.0.9** — telemetry to Monitor zone `hillview` (§6)
-- Also: AWS SDK v2 (S3 uploads), SendGrid (mail), golang-jwt v5, google/uuid
+- Also: AWS SDK v2 (S3 client for uploads to OpenBucket, or AWS S3 until cutover), SendGrid (mail), golang-jwt v5, google/uuid
 
 ## 3. Project structure
 
@@ -55,7 +55,11 @@ dev check    # gofmt -w -s . && go vet ./... && go test ./...
 | `ASSET_DATABASE_DSN` | yes | MariaDB DSN for `hillview_assets` |
 | `JWT_SIGNING_KEY` | yes | Shared Hillview JWT key |
 | `SENDGRID_API_KEY` | yes | SendGrid |
-| `AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_REGION` | yes (SDK) | S3 uploads (`us-west-1`) |
+| `CONTENT_S3_ENDPOINT` | no | S3-compatible endpoint for image/thumbnail uploads (OpenBucket). Unset = AWS S3 via the SDK's default credential chain (`AWS_*`) — the pre-migration path |
+| `CONTENT_S3_REGION / CONTENT_S3_BUCKET` | no | Default `us-west-1` / `content.hillview.tv` |
+| `CONTENT_S3_ACCESS_KEY_ID / CONTENT_S3_SECRET_ACCESS_KEY` | with endpoint | Static credentials for `CONTENT_S3_ENDPOINT` |
+| `CONTENT_PUBLIC_BASE_URL` | no | Base of the URL returned for an upload (default `https://content.hillview.tv`); the proxy serves that host from OpenBucket |
+| `AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY` | until cutover | Only read when `CONTENT_S3_ENDPOINT` is unset |
 | `PORT` | no | Listen port (default 8000; Lattice sets 8001–8005) |
 | `HEALTH_CHECK_URL` | yes | healthchecks.io ping URL, hit once a minute |
 | `MONITOR_INGEST_URL` | no | Monitor ingest, `https://hillview-monitor-api.appleby.cloud/v1/events`. Unset = no telemetry |
