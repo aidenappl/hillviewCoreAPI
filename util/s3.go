@@ -34,6 +34,13 @@ var (
 		return s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(env.ContentS3Endpoint)
 			o.UsePathStyle = true
+			// The SDK's default (checksums "when supported") sends PutObject
+			// bodies as aws-chunked with a CRC32 trailer. OpenBucket doesn't
+			// decode that and stores the chunk framing inside the object, so
+			// every upload came out corrupt. Only checksum when an operation
+			// requires it.
+			o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+			o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
 		})
 	}()
 )
