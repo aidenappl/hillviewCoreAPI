@@ -2,10 +2,12 @@ package routers
 
 import (
 	"context"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
+	"github.com/hillview.tv/coreAPI/media"
 	"github.com/hillview.tv/coreAPI/responder"
 	"github.com/hillview.tv/coreAPI/util"
 )
@@ -67,6 +69,10 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 		ID:    idInt,
 		Route: route,
 	})
+	if errors.Is(err, media.ErrUnsupportedImage) {
+		responder.SendError(w, "image must be a JPEG, PNG, GIF or WebP", http.StatusBadRequest, err)
+		return
+	}
 	if err != nil {
 		responder.SendError(w, "failed to upload image to s3", http.StatusConflict, err)
 		return
