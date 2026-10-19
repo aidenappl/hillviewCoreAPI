@@ -56,7 +56,7 @@ dev check    # gofmt -w -s . && go vet ./... && go test ./...
 | `ASSET_DATABASE_DSN` | yes | MariaDB DSN for `hillview_assets` |
 | `JWT_SIGNING_KEY` | yes | Shared Hillview JWT key |
 | `SENDGRID_API_KEY` | yes | SendGrid |
-| `CONTENT_S3_ENDPOINT` | no | S3-compatible endpoint for image/thumbnail uploads (OpenBucket). Unset = AWS S3 via the SDK's default credential chain (`AWS_*`) — the pre-migration path |
+| `CONTENT_S3_ENDPOINT` | no | S3-compatible endpoint for image/thumbnail uploads (OpenBucket). Unset = AWS S3 via the SDK's default credential chain (`AWS_*`) — the pre-migration path. With an endpoint set, the client sets `RequestChecksumCalculation`/`ResponseChecksumValidation` to `WhenRequired`: OpenBucket doesn't decode the SDK's default aws-chunked bodies and would store the chunk framing in the object |
 | `CONTENT_S3_REGION / CONTENT_S3_BUCKET` | no | Default `us-west-1` / `content.hillview.tv` |
 | `CONTENT_S3_ACCESS_KEY_ID / CONTENT_S3_SECRET_ACCESS_KEY` | with endpoint | Static credentials for `CONTENT_S3_ENDPOINT` — **from Keyring** (secrets 143/144) unless set in the environment |
 | `KEYRING_URL / KEYRING_ACCESS_KEY_ID / KEYRING_SECRET_ACCESS_KEY` | no | Keyring token `hillview-core-api`. `env` loads every secret granted to it once at startup (5s timeout); `getSecret` values prefer the environment, then Keyring. Unset or unreachable = environment only; `KEYRING_SOURCE=env` disables Keyring (tests) |
