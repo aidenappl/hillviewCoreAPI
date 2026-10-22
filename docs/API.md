@@ -110,7 +110,6 @@ All successful responses return JSON with the requested data directly in the res
 | `title`           | string     | Video title                    |
 | `description`     | string     | Video description              |
 | `thumbnail`       | string     | Thumbnail image URL            |
-| `cloudflare_id`   | string     | Cloudflare video ID (nullable) |
 | `mux_playback_id` | string     | Mux playback ID (nullable)     |
 | `url`             | string     | Video URL                      |
 | `download_url`    | string     | Download URL (nullable)        |
@@ -274,7 +273,6 @@ Retrieve a paginated list of videos.
     "title": "Video Title",
     "description": "Video description",
     "thumbnail": "https://example.com/thumb.jpg",
-    "cloudflare_id": "cf123",
     "mux_playback_id": null,
     "url": "https://example.com/video.mp4",
     "download_url": "https://example.com/download.mp4",
@@ -316,7 +314,6 @@ Retrieve a single video by ID or identifier.
   "title": "Video Title",
   "description": "Video description",
   "thumbnail": "https://example.com/thumb.jpg",
-  "cloudflare_id": "cf123",
   "mux_playback_id": null,
   "url": "https://example.com/video.mp4",
   "download_url": "https://example.com/download.mp4",
