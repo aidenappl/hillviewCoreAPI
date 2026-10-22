@@ -88,7 +88,7 @@ Local runs need a reachable MariaDB. Leave the `MONITOR_*` variables unset local
 
 **Middleware order** on the `/core/v1.1` subrouter: (request id, where present) → `telemetry.Middleware` → `LoggingMiddleware` → `MuxHeaderMiddleware` → `TokenHandlers` (where present) → route. `/healthcheck` is on the root router, outside all of it, and emits nothing.
 
-**Video provider ids:** video responses derive `cloudflare_id` (Cloudflare Stream url) and `mux_playback_id` (`https://stream.mux.com/{id}.m3u8`) from `videos.url` in `structs.Video.SetProviderIDs` — the same rules as hillviewVideoAPI's `streamurl` package; keep the two in step. The library is moving from Stream to Mux (Oct 2026), so both appear while the migration runs.
+**Video provider ids:** video responses derive `mux_playback_id` (`https://stream.mux.com/{id}.m3u8`) from `videos.url` in `structs.Video.SetProviderIDs` — the same rules as hillviewVideoAPI's `streamurl` package; keep the two in step. Videos moved from Cloudflare Stream to Mux in October 2026; `cloudflare_id` was dropped when the Stream account was emptied (2026-10-21).
 
 **Auth:** Hillview JWTs minted by hillviewAuthAPI and signed with the shared `JWT_SIGNING_KEY`, read from `Authorization: Bearer` or the `hv_access` cookie. `AccessTokenMiddleware` calls `telemetry.SetUserID` once it resolves the user.
 
