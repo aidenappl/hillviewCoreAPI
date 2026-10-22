@@ -19,19 +19,15 @@ import (
 
 var (
 	contentClient = func() *s3.Client {
+		// The content store: the Hillview OpenBucket instance.
 		cfg, err := config.LoadDefaultConfig(
 			context.TODO(),
 			config.WithRegion(env.ContentS3Region),
+			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(env.ContentS3AccessKeyID, env.ContentS3SecretAccessKey, "")),
 		)
 		if err != nil {
-			panic(fmt.Errorf("unable to load aws credentials: %w", err))
+			panic(fmt.Errorf("unable to load content store config: %w", err))
 		}
-
-		// An S3-compatible store (OpenBucket) replaces AWS when configured.
-		if env.ContentS3Endpoint == "" {
-			return s3.NewFromConfig(cfg)
-		}
-		cfg.Credentials = credentials.NewStaticCredentialsProvider(env.ContentS3AccessKeyID, env.ContentS3SecretAccessKey, "")
 		return s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(env.ContentS3Endpoint)
 			o.UsePathStyle = true
