@@ -31,7 +31,8 @@ hillviewCoreAPI/
   responder/             # success/error JSON; `SendError` records the failure cause for Monitor
   routers/               # handlers (`handle*.router.go`)
   structs/               # entities
-  util/                  # helpers
+  util/                  # helpers; `util/s3.go` uploads to the content store
+  media/                 # `ImageType`: sniff an upload's content type + extension (no env dependency, so plain `go test` covers it)
   telemetry/             # Monitor client: Init, request middleware, failure recording, Go(), shutdown flush.
                          #   IDENTICAL in all five Hillview Go APIs — change it in all of them
   Dockerfile             # golang:alpine build → alpine run

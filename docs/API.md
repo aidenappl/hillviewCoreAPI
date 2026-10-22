@@ -1300,7 +1300,7 @@ Update a spotlight entry.
 
 #### POST `/core/v1.1/admin/upload`
 
-Upload an image file to S3.
+Upload an image to the content store (OpenBucket), served at `https://content.hillview.tv`.
 
 **Authentication:** Required
 
@@ -1312,17 +1312,17 @@ Upload an image file to S3.
 | ------- | ------- | -------- | ----------------------------------------------- |
 | `id`    | integer | Yes      | Associated resource ID                          |
 | `route` | string  | Yes      | S3 route category (must be in permitted routes) |
-| `image` | file    | Yes      | Image file (max 10MB)                           |
+| `image` | file    | Yes      | JPEG, PNG, GIF or WebP (max 10MB)               |
 
 **Response:**
 
 ```json
 {
-  "url": "https://s3.example.com/uploads/route/id/image.jpg"
+  "url": "https://content.hillview.tv/thumbnails/85-2KO2VH5Y72-1792369879.png"
 }
 ```
 
-**Note:** The `route` parameter must be a valid, permitted S3 route as defined in the application configuration.
+**Note:** `route` must be `thumbnails/` or `images/assets/` (`util.ValidS3Route`). The type is sniffed from the bytes (`media.ImageType`): the key's extension and the stored `Content-Type` follow it, and anything other than JPEG/PNG/GIF/WebP is refused with `400`.
 
 ---
 

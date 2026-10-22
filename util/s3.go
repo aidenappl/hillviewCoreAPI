@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/hillview.tv/coreAPI/env"
+	"github.com/hillview.tv/coreAPI/media"
 )
 
 var (
@@ -52,24 +53,30 @@ type UploadImageRequest struct {
 }
 
 func UploadImage(ctx context.Context, req UploadImageRequest) (string, error) {
+	contentType, ext, err := media.ImageType(req.Image)
+	if err != nil {
+		return "", err
+	}
+
 	now := time.Now()
 	sec := now.Unix()
 	generated := strconv.Itoa(req.ID) + "-" + RandomString(10, LetterNumberBytes) + "-" + strconv.FormatInt(sec, 10)
+	key := req.Route + generated + ext
 	input := &s3.PutObjectInput{
 		Bucket:      aws.String(env.ContentS3Bucket),
-		Key:         aws.String(req.Route + *aws.String(generated) + ".jpeg"),
+		Key:         aws.String(key),
 		ACL:         types.ObjectCannedACLPublicRead,
 		Body:        bytes.NewReader(req.Image),
-		ContentType: aws.String("image/jpeg"),
+		ContentType: aws.String(contentType),
 	}
 
-	_, err := contentClient.PutObject(ctx, input)
+	_, err = contentClient.PutObject(ctx, input)
 	if err != nil {
 		log.Println(err)
 		return "", fmt.Errorf("error putting object in s3: %w", err)
 	}
 
-	return env.ContentPublicBaseURL + "/" + req.Route + generated + ".jpeg", nil
+	return env.ContentPublicBaseURL + "/" + key, nil
 }
 
 func ValidS3Route(route string) bool {
